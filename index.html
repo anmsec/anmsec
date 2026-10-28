@@ -2,7 +2,10 @@
 <title>Tournament</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css"><style>.pre{white-space:pre-wrap}.hide{display:none!important}.opts{display:flex;gap:22px;flex-wrap:wrap}.gh{font-size:1.15rem;margin:24px 0 -6px;color:var(--mint)}.mycode{font:700 1.5rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.25em;color:var(--mint)}</style></head><body>
+<link rel="stylesheet" href="style.css"><style>.pre{white-space:pre-wrap}.hide{display:none!important}.opts{display:flex;gap:22px;flex-wrap:wrap}.gh{font-size:1.15rem;margin:24px 0 -6px;color:var(--mint)}.mycode{font:700 1.5rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.25em;color:var(--mint)}
+.hero h1{font-size:clamp(2rem,5vw,4rem);line-height:1.04}
+@media(min-width:761px){.hero .wrap{grid-template-columns:1.5fr 1fr}.hero .logo{max-width:400px}}
+@media(max-width:760px){nav .brand span{font-size:.9rem;line-height:1.1}}</style></head><body>
 <nav><div class="wrap"><a class="brand" href="#top"><img id="nl" src="logo.png" alt="" onerror="this.remove()"><span id="nt"></span></a><div class="links" id="lk"></div></div></nav>
 <header class="hero" id="top"><div class="wrap"><div><h1 id="h1"></h1><p class="tag" id="tg"></p>
 <div class="meta"><div><span>When</span><br><b id="hd"></b></div><div><span>Where</span><br><b id="hv"></b></div></div>
@@ -34,7 +37,9 @@ function build(c,s){
 <label>Team captain (contact person)</label><input name="captain" required maxlength="80">
 <label>Address</label><input name="address" required maxlength="160" placeholder="City / municipality, province">
 <div class="row"><div><label>Contact number</label><input name="phone" type="tel" required maxlength="30"></div><div><label>Email</label><input name="email" type="email" required maxlength="120"></div></div>
-<div class="row"><div><h3 class="gh">Male players</h3>${[1,2,3].map(n=>`<label>Male player ${n} full name</label><input name="m${n}" required maxlength="80">`).join('')}</div><div><h3 class="gh">Female players</h3>${[1,2,3].map(n=>`<label>Female player ${n} full name</label><input name="f${n}" required maxlength="80">`).join('')}</div></div>
+<h3 class="gh">Men's Doubles</h3><div class="row"><div><label>Male Player 1 full name</label><input name="m1" required maxlength="80"></div><div><label>Male Player 2 full name</label><input name="m2" required maxlength="80"></div></div>
+<h3 class="gh">Women's Doubles</h3><div class="row"><div><label>Female Player 1 full name</label><input name="f1" required maxlength="80"></div><div><label>Female Player 2 full name</label><input name="f2" required maxlength="80"></div></div>
+<h3 class="gh">Mixed Doubles</h3><div class="row"><div><label>Male Player 3 full name</label><input name="m3" required maxlength="80"></div><div><label>Female Player 3 full name</label><input name="f3" required maxlength="80"></div></div>
 <p><button class="btn" id="sb">Submit registration</button></p><div id="out"></div></form>`);
  $('m').innerHTML=h;
  const co=c.contact;$('ft').innerHTML=esc(c.title)+(co.person||co.phone||co.email?'<br>Questions: '+[co.person,co.phone,co.email].filter(Boolean).map(esc).join(' · '):'')+(co.facebook?`<br><a href="${esc(co.facebook)}" rel="noopener">Facebook</a>`:'');
