@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registration Status</title><meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04130d;--bg2:#071c14;--panel:#0b2a1e;--line:rgba(120,255,200,.15);--ink:#eef8f2;--mute:#8fb5a2;--mint:#3ef0b0;--on:#032015}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}
+body{font-family:Barlow,system-ui,Arial,sans-serif;color:var(--ink);background:radial-gradient(1200px 600px at 50% -10%,var(--bg2) 0,var(--bg) 70%) fixed;display:flex;justify-content:center;padding:28px 16px 40px}
+main{width:100%;max-width:460px;text-align:center}
+.logo{height:84px;margin-top:6px}
+.kick{font:700 .78rem Barlow;letter-spacing:.22em;color:var(--mint);margin:10px 0 2px;text-transform:uppercase}
+h1{font:800 2.1rem/1.05 'Barlow Condensed',Barlow,sans-serif;text-transform:uppercase;margin:0 0 6px}
+.sub{color:var(--mute);margin:0 0 22px;font-size:.98rem}
+form{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+label{display:block;text-align:left;font-weight:600;font-size:.85rem;color:var(--mute);margin-bottom:6px}
+input{width:100%;font:700 1.9rem/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.3em;text-align:center;text-transform:uppercase;padding:12px 8px 12px 18px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);outline:none}
+input:focus{border-color:var(--mint)}input::placeholder{color:var(--mute);opacity:.5;letter-spacing:.3em}
+button{width:100%;margin-top:14px;font:700 1.05rem Barlow;letter-spacing:.04em;padding:14px;border:0;border-radius:12px;background:var(--mint);color:var(--on);cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+.msg{margin-top:14px;font-size:.92rem;color:var(--ink);background:color-mix(in srgb,#e11d48 14%,transparent);border:1px solid color-mix(in srgb,#e11d48 50%,transparent);border-radius:10px;padding:10px 12px;text-align:left}
+#res{margin-top:18px}.foot{color:var(--mute);font-size:.8rem;margin-top:22px}
+</style></head><body>
+<main id="mn" hidden>
+<img class="logo" id="lg" alt="" onerror="this.style.display='none'">
+<div class="kick" id="kick"></div><h1 id="h"></h1><p class="sub" id="sub"></p>
+<form id="f" autocomplete="off"><label for="code" id="lab"></label>
+<input id="code" maxlength="6" placeholder="XXXXXX" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="6-character code">
+<button id="go" type="submit"></button><div id="err" role="alert"></div></form>
+<div id="res" aria-live="polite"></div><p class="foot" id="foot"></p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.min.js"></script>
+<script src="tournament.config.js"></script><script src="firebase-init.js"></script><script src="status-core.js"></script>
+<script>
+const $=id=>document.getElementById(id),KEY='mpoStatusTries_'+T.slug;let CF,S;
+const tries=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return{};}},save=t=>{try{localStorage.setItem(KEY,JSON.stringify(t));}catch(e){}};
+const lockLeft=()=>{const t=tries();return t.until&&t.until>Date.now()?t.until-Date.now():0;};
+function say(m){$('err').innerHTML='';if(m){const d=document.createElement('div');d.className='msg';d.textContent=m;$('err').appendChild(d);}}
+async function check(code){
+ const left=lockLeft();if(left){say(S.lockMsg.replace('{minutes}',Math.ceil(left/60000)));return;}
+ code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+ if(code.length!==6){say(S.notFound);return;}
+ say('');$('res').replaceChildren();$('go').disabled=true;$('go').textContent='…';
+ try{const s=await db.collection(COL.status).doc(code).get();
+  if(!s.exists){const t=tries(),n=(t.until&&t.until<=Date.now()?0:(t.n||0))+1;save(n>=S.maxTries?{n:0,until:Date.now()+S.lockMinutes*60000}:{n});
+   say(n>=S.maxTries?S.lockMsg.replace('{minutes}',S.lockMinutes):S.notFound);}
+  else{save({n:0});$('res').replaceChildren(renderStatusCard(CF,Object.assign({_code:code},s.data())));}}
+ catch(e){say(S.error);console.warn(e.message);}
+ $('go').disabled=false;$('go').textContent=S.buttonText;}
+getConfig().then(c=>{CF=c;S=c.status;applyThemeCfg(c);document.title=S.title+' · '+c.title;
+ if(!feature(c,'statusChecker')){document.body.innerHTML='<main><h1>Not available</h1></main>';return;}
+ $('lg').src=c.logoUrl||'';$('kick').textContent=c.title;$('h').textContent=S.title;$('sub').textContent=S.subtitle;$('lab').textContent=S.inputLabel;$('go').textContent=S.buttonText;$('foot').textContent=S.footer;$('mn').hidden=false;
+ $('code').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');});
+ $('f').addEventListener('submit',e=>{e.preventDefault();check($('code').value);});
+ const q=new URLSearchParams(location.search).get('code');if(q){$('code').value=q.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);check(q);}});
+</script></body></html>

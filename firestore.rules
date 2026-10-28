@@ -1,0 +1,46 @@
+// Firestore rules for pmsea2026 (PMSEA Pickleball Cup). Publish in Firebase console > Firestore > Rules.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signed() { return request.auth != null && request.auth.token.email_verified == true; }
+    function mail()   { return request.auth.token.email.lower(); }
+    function role()   { return exists(/databases/$(database)/documents/pmsea2026-users/$(mail()))
+                          ? get(/databases/$(database)/documents/pmsea2026-users/$(mail())).data.role : ''; }
+    function isSuper(){ return signed() && (role() == 'superadmin' || mail() in ['ton.quinton@gmail.com']); }   // BOOTSTRAP: same as superEmails in tournament.config.js
+    function isAdmin(){ return isSuper() || (signed() && role() == 'admin'); }
+    function isStaff(){ return isAdmin() || (signed() && (role() == 'staff' || role() == 'viewer')); }
+
+    match /pmsea2026-settings/{d}  { allow read: if true; allow write: if isSuper(); }
+    match /pmsea2026-users/{e}     { allow read: if isSuper() || (signed() && mail() == e); allow write: if isSuper(); }
+
+    // Public can only CREATE a registration whose doc id equals its own 6-char code (a taken code is refused = no duplicates).
+    match /pmsea2026-registrations/{d} {
+      allow create: if request.resource.data.status == 'Submitted'
+                    && request.resource.data.code == d
+                    && d.matches('[A-Z0-9]{6}')
+                    && !('decision' in request.resource.data) && !('finalCategory' in request.resource.data);
+      allow read: if isStaff();
+      allow update, delete: if isAdmin();
+    }
+
+    // Public status doc, one per code. Players can read ONE doc by code (no listing).
+    match /pmsea2026-status/{code} {
+      allow get: if true;
+      allow list: if isAdmin();
+      // created by the registration form right after the registration exists
+      allow create: if request.resource.data.status == 'Submitted'
+                    && exists(/databases/$(database)/documents/pmsea2026-registrations/$(code))
+                    && request.resource.data.keys().hasOnly(['team','category','finalCategory','decision','rejected','rejectReason','status','updatedAt']);
+      // confirm.html: the player may write ONLY response + respondedAt, once, while invited and before the deadline
+      allow update: if resource.data.get('invited', false) == true
+                    && resource.data.get('response', '') == ''
+                    && request.time < resource.data.expiresAt
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['response','respondedAt'])
+                    && request.resource.data.response in ['accepted','declined']
+                    && request.resource.data.respondedAt == request.time;
+      allow write: if isAdmin();
+    }
+
+    match /pmsea2026-audit/{d}     { allow read: if isSuper(); allow create: if signed() && request.resource.data.actorEmail == mail(); allow update, delete: if false; }
+  }
+}

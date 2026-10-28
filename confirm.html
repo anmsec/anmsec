@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confirm your slot</title><meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04130d;--bg2:#071c14;--panel:#0b2a1e;--line:rgba(120,255,200,.15);--ink:#eef8f2;--mute:#8fb5a2;--mint:#3ef0b0;--on:#032015}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}
+body{font-family:Barlow,system-ui,Arial,sans-serif;color:var(--ink);background:radial-gradient(1200px 600px at 50% -10%,var(--bg2) 0,var(--bg) 70%) fixed;display:flex;justify-content:center;padding:28px 16px 40px}
+main{width:100%;max-width:460px;text-align:center}
+.logo{height:84px;margin-top:6px}
+.kick{font:700 .78rem Barlow;letter-spacing:.22em;color:var(--mint);margin:10px 0 2px;text-transform:uppercase}
+h1{font:800 2.1rem/1.05 'Barlow Condensed',Barlow,sans-serif;text-transform:uppercase;margin:0 0 6px}
+.sub{color:var(--mute);margin:0 0 22px;font-size:.98rem}
+form{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+label{display:block;text-align:left;font-weight:600;font-size:.85rem;color:var(--mute);margin-bottom:6px}
+input{width:100%;font:700 1.9rem/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.3em;text-align:center;text-transform:uppercase;padding:12px 8px 12px 18px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);outline:none}
+input:focus{border-color:var(--mint)}
+form button{width:100%;margin-top:14px;font:700 1.05rem Barlow;padding:14px;border:0;border-radius:12px;background:var(--mint);color:var(--on);cursor:pointer}
+.msg{margin-top:14px;font-size:.92rem;background:color-mix(in srgb,#e11d48 14%,transparent);border:1px solid color-mix(in srgb,#e11d48 50%,transparent);border-radius:10px;padding:10px 12px;text-align:left}
+#res{margin-top:18px}.foot{margin-top:22px;font-size:.9rem}.foot a{color:var(--mint)}
+</style></head><body>
+<main id="mn" hidden>
+<img class="logo" id="lg" alt="" onerror="this.style.display='none'">
+<div class="kick" id="kick"></div><h1 id="h"></h1><p class="sub" id="sub"></p>
+<form id="f" autocomplete="off" hidden><label for="code" id="lab"></label>
+<input id="code" maxlength="6" placeholder="XXXXXX" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="6-character code"><button id="go" type="submit"></button></form>
+<div id="res" aria-live="polite"></div><p class="foot"><a href="status.html" id="sl">Check my status</a></p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.min.js"></script>
+<script src="tournament.config.js"></script><script src="firebase-init.js"></script><script src="status-core.js"></script>
+<script>
+const $=id=>document.getElementById(id);let CF,C,CODE='',timer=0;
+const norm=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+const paras=(card,txt,d)=>String(txt||'').split('\n').map(l=>fillStatus(l,d,CF)).filter(l=>l.trim()).forEach(l=>card.appendChild(mk('p','',l)));
+function fail(m){const r=$('res');r.replaceChildren();const d=mk('div','msg',m);r.appendChild(d);}
+async function load(code,note){
+ clearInterval(timer);code=norm(code);$('res').replaceChildren();
+ if(code.length!==6){fail(C.notFound);return;}
+ CODE=code;
+ try{const s=await db.collection(COL.status).doc(code).get();if(!s.exists){fail(C.notFound);return;}
+  render(Object.assign({_code:code},s.data()),note);}
+ catch(e){console.warn(e.message);fail(C.error);}}
+function shell(d,color,badge,title){const c=mk('div','sc-card');c.style.setProperty('--c',STATUS_COLORS[color]);
+ c.append(mk('div','sc-team','Team'),mk('div','sc-tn',d.team||'—'),mk('span','sc-badge',badge),mk('h2','',fillStatus(title,d,CF)));return c;}
+function render(d,note){
+ const st=stateOf(d),res=$('res');res.replaceChildren();let c;
+ if(st==='invited'){
+  c=shell(d,'warn',C.deadlineLabel,C.invitedTitle);paras(c,C.invitedMsg,d);
+  const dl=mk('div','cf-dl'),e=toMs(d.expiresAt);
+  const tick=()=>{const left=e-Date.now();if(left<=0){load(CODE);return;}const h=Math.floor(left/36e5),m=Math.floor(left%36e5/6e4);dl.textContent=C.deadlineLabel+': '+new Date(e).toLocaleString('en-PH',{timeZone:'Asia/Manila',dateStyle:'medium',timeStyle:'short'})+' (PH time) · '+h+'h '+m+'m left';};
+  tick();timer=setInterval(tick,30000);c.appendChild(dl);
+  const box=mk('div','cf-btns');c.appendChild(box);
+  const choose=kind=>{box.replaceChildren();const q=mk('p','',fillStatus(kind==='accepted'?C.acceptPrompt:C.declinePrompt,d,CF));q.style.width='100%';box.appendChild(q);
+   const yes=mk('button','sc-cta',kind==='accepted'?C.yesAccept:C.yesDecline),no=mk('button','sc-cta ghost',C.back);
+   if(kind==='declined')yes.style.setProperty('--c',STATUS_COLORS.danger);
+   yes.onclick=()=>respond(kind,yes,no);no.onclick=()=>render(d);box.append(yes,no);};
+  const a=mk('button','sc-cta',C.accept),b=mk('button','sc-cta ghost',C.decline);a.onclick=()=>choose('accepted');b.onclick=()=>choose('declined');box.append(a,b);
+  c.appendChild(mk('p','sc-note',fillStatus(C.lockNote,d,CF)));
+ }else if(st==='confirmed'){c=shell(d,'success','Confirmed',C.acceptedTitle);paras(c,C.acceptedMsg,d);c.appendChild(mk('p','sc-note',fillStatus(C.lockNote,d,CF)));}
+ else if(st==='declined'){c=shell(d,'neutral','Declined',C.declinedTitle);paras(c,C.declinedMsg,d);}
+ else if(st==='expired'){c=shell(d,'warn','Expired',C.expiredTitle);paras(c,C.expiredMsg,d);}
+ else if(st==='rejected'){c=shell(d,'danger','Not accepted','');paras(c,C.rejectedMsg,d);if(d.rejectReason){const r=mk('div','sc-reason');r.append(mk('b','','Reason'),document.createTextNode(d.rejectReason));c.appendChild(r);}}
+ else{c=shell(d,'info','Not yet','');paras(c,C.notInvitedMsg,d);}
+ res.appendChild(c);if(note)fail(note);}
+async function respond(kind,yes,no){
+ yes.disabled=no.disabled=true;let ok=true;
+ try{await db.collection(COL.status).doc(CODE).update({response:kind,respondedAt:firebase.firestore.FieldValue.serverTimestamp()});}
+ catch(e){ok=false;console.warn(e.message);}   /* refused = deadline passed, already answered, or invitation cancelled: reload shows the real state */
+ await load(CODE,ok?'':C.error);}
+getConfig().then(c=>{CF=c;C=c.confirm;applyThemeCfg(c);document.title=C.title+' · '+c.title;
+ $('lg').src=c.logoUrl||'';$('kick').textContent=c.title;$('h').textContent=C.title;$('sub').textContent=C.subtitle;$('lab').textContent=C.inputLabel;$('go').textContent=C.lookup;$('mn').hidden=false;
+ if(!feature(c,'statusChecker'))$('sl').hidden=true;
+ $('code').addEventListener('input',e=>{e.target.value=norm(e.target.value);});
+ $('f').addEventListener('submit',e=>{e.preventDefault();load($('code').value);});
+ const q=norm(new URLSearchParams(location.search).get('code'));
+ if(q.length===6){$('sub').hidden=false;load(q);}else{$('f').hidden=false;}
+}).catch(()=>{document.body.innerHTML='<main><h1>Unavailable</h1></main>';});
+</script></body></html>

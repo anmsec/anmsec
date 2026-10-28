@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Superadmin</title><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>body{padding:20px}#app{max-width:980px;margin:auto}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.tabs button{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:9px 16px;border-radius:999px;cursor:pointer;font:600 .9rem Barlow}.tabs button.on{background:var(--mint);color:var(--on)}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}.pane form{all:unset}label.chk{margin:10px 0}table input{padding:8px}.sw{display:inline-block;width:18px;height:18px;border-radius:50%;margin-right:3px;vertical-align:middle}
+.bar{position:sticky;bottom:0;background:var(--bg);padding:12px 0;display:flex;gap:12px;align-items:center}</style></head><body>
+<div id="gate" style="max-width:420px;margin:12vh auto;text-align:center"><h1>Superadmin</h1><p class="lead">Sign in with your Google account.</p><button class="btn" id="in">Sign in with Google</button><div id="deny"></div></div>
+<div id="app" hidden><h1>Tournament Setup</h1><div id="who" class="lead"></div><div class="tabs" id="tabs"></div><div class="pane" id="pane"></div>
+<div class="bar"><button class="btn" id="save">Save settings</button><span id="st"></span></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.min.js"></script>
+<script src="tournament.config.js"></script><script src="firebase-init.js"></script><script src="status-core.js"></script>
+<script>
+const $=id=>document.getElementById(id);let cfg,tab='event';
+const g=(o,p)=>p.split('.').reduce((a,k)=>a?.[k],o),s=(o,p,v)=>{const k=p.split('.'),l=k.pop();k.reduce((a,x)=>a[x]??={},o)[l]=v};
+const YN=[['per_player','Per player'],['per_team','Per team'],['per_category','Per category (set in Categories tab)'],['free','Free (LGU / sponsored)']];
+const TABS={
+ event:['Event',[['title','Tournament title'],['tagline','Tagline'],['date','Date(s)'],['venue','Venue'],['siteUrl','Site link: where this site is hosted (used in email links), e.g. https://yourname.github.io/pmsea2026'],['confirmHours','Hours the player has to accept or decline the invite','number'],['regOpen','Registration opens','date'],['regClose','Registration closes','date'],['openTime','Opens at (PH time)','time'],['mode','Registration mode','select',[['auto','Auto (by dates)'],['open','Force open'],['closed','Force closed']]],['logoUrl','Logo file/URL'],['posterUrl','Poster file/URL']]],
+ categories:['Categories & Prizes'],
+ features:['Features'],theme:['Theme'],
+ status:['Status Page'],
+ confirm:['Confirm Page',[['confirm.title','Page title'],['confirm.subtitle','Subtitle'],['confirm.inputLabel','Code field label (only if the link has no code)'],['confirm.lookup','Code button text'],['confirm.invitedTitle','Invited: headline'],['confirm.invitedMsg','Invited: message (one paragraph per line)','area'],['confirm.deadlineLabel','Deadline label'],['confirm.accept','Accept button'],['confirm.decline','Decline button'],['confirm.acceptPrompt','Accept: confirmation question','area'],['confirm.declinePrompt','Decline: confirmation question','area'],['confirm.yesAccept','Accept: yes button'],['confirm.yesDecline','Decline: yes button'],['confirm.back','Go back button'],['confirm.lockNote','Cancellation / no-show note (shown while deciding and after confirming)','area'],['confirm.acceptedTitle','Confirmed: headline'],['confirm.acceptedMsg','Confirmed: message','area'],['confirm.declinedTitle','Declined: headline'],['confirm.declinedMsg','Declined: message','area'],['confirm.expiredTitle','Expired: headline'],['confirm.expiredMsg','Expired: message','area'],['confirm.rejectedMsg','Rejected: message','area'],['confirm.notInvitedMsg','Not invited yet: message','area'],['confirm.notFound','Code not found'],['confirm.error','Error message']],'Placeholders: {team} {category} {finalCategory} {hours} {deadline} {title}. Players open this page from the link in the invite email.'],
+ contact:['Contact',[['contact.person','Contact person'],['contact.phone','Phone'],['contact.email','Email','email'],['contact.facebook','Facebook link']]],
+ content:['Rules / FAQ',[['rulesText','Rules','area'],['faqText','FAQ','area'],['scheduleText','Schedule','area']]],
+ email:['Emails',[['email.senderName','Sender name'],['email.replyTo','Reply-to email'],
+  ['email.subjSubmitted','1. Received (auto, has the code) - subject'],['email.bodySubmitted','1. Received - body','area'],['email.subjInvite','2. Invite (code + confirm link) - subject'],['email.bodyInvite','2. Invite - body','area'],['email.subjRejected','3. Rejected - subject'],['email.bodyRejected','3. Rejected - body','area']],
+  'Placeholders: {title} {team} {captain} {code} {category} {finalCategory} {deadline} {hours} {confirmUrl} {portalUrl} {reason}. The invite email also gets a big "Accept or decline your slot" button.'],
+ users:['Users & Roles']};
+function field([p,l,t='text',o]){const v=g(cfg,p);
+ if(t==='check')return `<label class="chk"><input type="checkbox" data-p="${p}" ${v?'checked':''}> ${l}</label>`;
+ if(t==='area')return `<label>${l}<textarea data-p="${p}" rows="4">${esc(v)}</textarea></label>`;
+ if(t==='lines')return `<label>${l} (one per line)<textarea data-p="${p}" data-t="lines" rows="4">${esc((v||[]).join('\n'))}</textarea></label>`;
+ if(t==='select')return `<label>${l}<select data-p="${p}">${o.map(x=>`<option value="${x[0]}" ${x[0]==v?'selected':''}>${x[1]}</option>`).join('')}</select></label>`;
+ return `<label>${l}<input data-p="${p}" data-t="${t}" type="${t}" value="${esc(v)}"></label>`}
+const CK=[['name','Category name'],['bracket','Bracket (gender / level / age)'],['slots','Slots','number'],['fee','Fee (if per-category)','number'],['first','1st prize'],['second','2nd prize'],['third','3rd prize'],['prizeNote','Prize note / sponsor']];
+function cats(){return `<div style="overflow:auto"><table><tr>${CK.map(c=>`<th>${c[1]}</th>`).join('')}<th></th></tr>${cfg.categories.map((c,i)=>`<tr>${CK.map(k=>`<td><input data-c="${i}.${k[0]}" data-t="${k[2]||'text'}" type="${k[2]||'text'}" value="${esc(c[k[0]])}"></td>`).join('')}<td><button class="btn ghost" data-del="${i}">Delete</button></td></tr>`).join('')}</table></div><p><button class="btn ghost" id="addc">+ Add category</button></p>`}
+function feats(){return FEATURES.map(([k,l])=>field(['features.'+k,l,'check'])).join('')+'<p class="lead">Unchecked features are hidden from the public site and admin menus.</p>'}
+function themes(){const sw=(k,x)=>x.pal||(k==='custom'?[cfg.customTheme.tint,cfg.customTheme.accent,cfg.customTheme.highlight]:[x.bg,x.panel,x.mint,x.gold]);
+ return field(['themeMode','Mode','select',[['dark','Dark'],['light','Light'],['auto','Auto (follows each visitor\'s device)']]])+'<p class="lead">Every theme has a dark and a light version, made automatically. Admin pages also have their own mode button (bottom right).</p><div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">'+Object.entries(THEMES).map(([k,x])=>`<label class="chk" style="border:1px solid var(--line);border-radius:12px;padding:14px"><input type="radio" name="th" value="${k}" ${cfg.theme==k?'checked':''}><span><b>${esc(x.name)}</b><br>${sw(k,x).map(c=>`<i class="sw" style="background:${c}"></i>`).join('')}</span></label>`).join('')+'</div><h3 style="margin-top:24px">Custom theme colors (used when "Custom" is selected)</h3><div class="row">'+[['customTheme.accent','Accent / buttons'],['customTheme.tint','Background tint'],['customTheme.highlight','Highlight (prizes)']].map(x=>field([x[0],x[1],'color'])).join('')+'</div>'}
+async function users(){const q=await db.collection(COL.users).get();return `<table>${q.docs.map(d=>`<tr><td>${esc(d.id)}</td><td>${esc(d.data().role)}</td><td><button class="btn ghost" data-u="${esc(d.id)}">Remove</button></td></tr>`).join('')}</table>
+ <p><input id="ue" type="email" placeholder="google email" style="width:55%"> <select id="ur" style="width:30%"><option>staff</option><option>admin</option><option>superadmin</option></select> <button class="btn" id="uadd">Add</button></p>
+ <p class="lead">Staff: view only. Admin: review, send invites, change statuses. Superadmin: everything here.</p>`}
+async function render(){const T0=TABS[tab];let h='';
+ if(tab==='categories')h=cats();else if(tab==='features')h=feats();else if(tab==='theme')h=themes();else if(tab==='users')h=await users();else if(tab==='status')h=statusTab();else h=T0[1].map(field).join('')+(T0[2]?`<p class="lead">${T0[2]}</p>`:'');
+ $('pane').innerHTML=`<h2>${T0[0]}</h2>`+h;
+ if(tab==='status')updatePV();
+ $('tabs').innerHTML=Object.entries(TABS).map(([k,v])=>`<button data-tab="${k}" class="${k==tab?'on':''}">${v[0]}</button>`).join('')}
+document.addEventListener('click',async e=>{const d=e.target.dataset;
+ if(d.tab){tab=d.tab;render()}
+ if(d.del){cfg.categories.splice(+d.del,1);render()}
+ if(e.target.id==='addc'){cfg.categories.push({id:'cat-'+Date.now(),name:'New category',bracket:'',slots:16,fee:null,first:'',second:'',third:'',prizeNote:''});render()}
+ if(d.u){await db.collection(COL.users).doc(d.u).delete();render()}
+ if(e.target.id==='uadd'&&$('ue').value){await db.collection(COL.users).doc($('ue').value.trim().toLowerCase()).set({role:$('ur').value});render()}});
+['input','change'].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target,d=t.dataset;
+ if(t.name==='th'){cfg.theme=t.value;try{localStorage.removeItem('tpl-mode')}catch(e){}applyThemeCfg(cfg);return}
+ if(d.c){const[i,k]=d.c.split('.');cfg.categories[i][k]=d.t==='number'?(t.value===''?null:+t.value):t.value;return}
+ if(!d.p)return;let v=t.type==='checkbox'?t.checked:t.value;if(d.t==='number')v=+v;if(d.t==='lines')v=v.split('\n').map(x=>x.trim()).filter(Boolean);s(cfg,d.p,v);if(d.p==='themeMode'||d.p.startsWith('customTheme')){try{localStorage.removeItem('tpl-mode')}catch(e){}applyThemeCfg(cfg)}}));
+
+const PV={state:'invited',team:'Sample Team',category:'Sample Category',finalCategory:'Sample Category',rejectReason:'Sample reason'};
+function previewDoc(){const s=PV.state,d={_code:'ABC123',team:PV.team,category:PV.category,finalCategory:PV.finalCategory,decision:'',status:'Submitted'};
+ if(s==='verification')d.decision='For Verification';
+ if(s==='accepted')d.decision='Accepted';
+ if(s==='invited'){d.decision='Accepted';d.status='Invited';d.invited=true;d.expiresAt={toMillis:()=>Date.now()+172800000};}
+ if(s==='confirmed'){d.decision='Accepted';d.status='Confirmed';}
+ if(s==='declined'){d.decision='Accepted';d.rejected=true;d.rejectKind='player';d.rejectReason='Player declined';}
+ if(s==='expired'){d.decision='Accepted';d.rejected=true;d.rejectKind='expired';d.rejectReason='Player declined (no response within 48 hours)';}
+ if(s==='rejected'){d.decision='Rejected';d.rejected=true;d.rejectKind='committee';d.rejectReason=PV.rejectReason;}
+ return d;}
+const SG=[['status.title','Page title'],['status.subtitle','Subtitle'],['status.inputLabel','Code field label'],['status.buttonText','Button text'],['status.notFound','"Code not found" message'],['status.lockMsg','Locked-out message ({minutes})'],['status.error','Connection error message'],['status.footer','Footer text'],['status.maxTries','Wrong tries before lock','number'],['status.lockMinutes','Lock minutes','number']];
+const opt=(a,v)=>a.map(x=>`<option ${x==v?'selected':''}>${x}</option>`).join('');
+function stageHtml(s,i,n){const w=(s.when||[]).map((c,j)=>`<div style="display:flex;gap:8px;margin:6px 0"><select data-w="${i}.${j}.f">${Object.keys(STATUS_FIELDS).map(k=>`<option value="${k}" ${k==c.f?'selected':''}>${STATUS_FIELD_LABELS[k]}</option>`).join('')}</select><span style="align-self:center">is</span><select data-w="${i}.${j}.v">${opt(STATUS_FIELDS[c.f]||[],c.v)}</select><button class="btn ghost" data-sa="delw" data-si="${i}" data-sj="${j}">x</button></div>`).join('');
+ return `<details open style="border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0"><summary><b>${i+1}. ${esc(s.badge||'Stage')}</b> ${(s.when||[]).length?'':'<small>(fallback: shows when nothing above matches)</small>'}</summary>
+ <p class="lead" style="margin:8px 0 0">Show when ALL of these are true (empty = always):</p>${w}<button class="btn ghost" data-sa="addw" data-si="${i}">+ Condition</button>
+ <label>Badge text<input data-s="${i}.badge" value="${esc(s.badge)}"></label><label>Headline<input data-s="${i}.headline" value="${esc(s.headline)}"></label>
+ <label>Message lines (one per line)<textarea data-s="${i}.lines" data-t="lines" rows="4">${esc((s.lines||[]).join('\n'))}</textarea></label>
+ <label>Color<select data-s="${i}.color">${opt(Object.keys(STATUS_COLORS),s.color)}</select></label>
+ <label class="chk"><input type="checkbox" data-s="${i}.showReason" ${s.showReason?'checked':''}> Show rejection reason</label>
+ <label>Small note (optional)<input data-s="${i}.note" value="${esc(s.note)}"></label><div class="row"><label>Button label (optional)<input data-s="${i}.ctaLabel" value="${esc(s.ctaLabel)}"></label><label>Button link (https:, mailto:, tel:)<input data-s="${i}.ctaUrl" value="${esc(s.ctaUrl)}"></label></div>
+ <p><button class="btn ghost" data-sa="up" data-si="${i}" ${i?'':'disabled'}>Move up</button> <button class="btn ghost" data-sa="down" data-si="${i}" ${i<n-1?'':'disabled'}>Move down</button> <button class="btn ghost" data-sa="delS" data-si="${i}">Delete stage</button></p></details>`}
+function statusTab(){const st=cfg.status;
+ return `<h3>Page text</h3>`+SG.map(field).join('')+`<h3 style="margin-top:24px">Stages (first match wins, top to bottom)</h3><p class="lead">Placeholders: ${STATUS_PLACEHOLDERS}</p>
+ <p><button class="btn ghost" data-sa="pre" data-sp="default">Load default stages</button></p>${st.stages.map((s,i)=>stageHtml(s,i,st.stages.length)).join('')}<p><button class="btn ghost" data-sa="addS">+ Add stage</button></p>
+ <h3 style="margin-top:24px">Live preview</h3><div class="row"><label>State<select data-pv="state">${opt(STATUS_FIELDS.state,PV.state)}</select></label><label>Final category<input data-pv="finalCategory" value="${esc(PV.finalCategory)}"></label></div><label>Rejection reason<input data-pv="rejectReason" value="${esc(PV.rejectReason)}"></label><div id="pv" style="margin-top:16px;max-width:460px"></div>`}
+function updatePV(){const x=$('pv');if(!x)return;x.replaceChildren(renderStatusCard(cfg,previewDoc()))}
+document.addEventListener('click',e=>{const d=e.target.dataset,S=cfg&&cfg.status;if(!d.sa)return;const i=+d.si,a=S.stages;
+ if(d.sa==='addS')a.push(JSON.parse(JSON.stringify({id:'s'+Date.now(),badge:'New stage',headline:'Headline',lines:['Message'],color:'info',when:[{f:'decision',v:'Accepted'}],showReason:false,showBalance:false,ctaLabel:'',ctaUrl:'',note:''})));
+ if(d.sa==='delS'&&confirm('Delete this stage?'))a.splice(i,1);
+ if(d.sa==='up'&&i>0)[a[i-1],a[i]]=[a[i],a[i-1]];if(d.sa==='down'&&i<a.length-1)[a[i+1],a[i]]=[a[i],a[i+1]];
+ if(d.sa==='addw')(a[i].when=a[i].when||[]).push({f:'decision',v:'Accepted'});if(d.sa==='delw')a[i].when.splice(+d.sj,1);
+ if(d.sa==='pre'&&confirm('Replace ALL stages with the default stages?'))S.stages=JSON.parse(JSON.stringify(STATUS_PRESETS[d.sp]));render()});
+['input','change'].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target,d=t.dataset;
+ if(d.s){const[i,k]=d.s.split('.');cfg.status.stages[i][k]=t.type==='checkbox'?t.checked:d.t==='lines'?t.value.split('\n').map(x=>x.trim()).filter(Boolean):t.value;updatePV()}
+ if(d.w){const[i,j,k]=d.w.split('.'),c=cfg.status.stages[i].when[j];c[k]=t.value;if(k==='f')c.v=STATUS_FIELDS[t.value][0];if(ev==='change'||k==='f')render()}
+ if(d.pv){PV[d.pv]=t.value;updatePV()}}));
+$('save').onclick=async()=>{try{await SETDOC.set(cfg);$('st').textContent='Saved '+new Date().toLocaleTimeString()}catch(e){$('st').textContent='Save failed: '+e.message}};
+$('in').onclick=()=>auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+auth.onAuthStateChanged(async u=>{if(!u)return;const m=u.email.toLowerCase();let role=null;
+ try{const d=await db.collection(COL.users).doc(m).get();role=d.exists?d.data().role:null}catch(e){}
+ if(!role&&u.emailVerified&&T.superEmails.map(x=>x.toLowerCase()).includes(m)){role='superadmin';await db.collection(COL.users).doc(m).set({role}).catch(()=>{})}
+ if(role!=='superadmin'){$('deny').innerHTML='<div class="msg err">'+esc(m)+' is not a superadmin.</div>';return}
+ cfg=await getConfig();applyThemeCfg(cfg);$('gate').hidden=true;$('app').hidden=false;$('who').textContent=m+' · '+T.slug;render()});
+</script></body></html>

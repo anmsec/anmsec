@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tournament</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"><style>.pre{white-space:pre-wrap}.hide{display:none!important}.opts{display:flex;gap:22px;flex-wrap:wrap}.gh{font-size:1.15rem;margin:24px 0 -6px;color:var(--mint)}.mycode{font:700 1.5rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.25em;color:var(--mint)}</style></head><body>
+<nav><div class="wrap"><a class="brand" href="#top"><img id="nl" src="logo.png" alt="" onerror="this.remove()"><span id="nt"></span></a><div class="links" id="lk"></div></div></nav>
+<header class="hero" id="top"><div class="wrap"><div><h1 id="h1"></h1><p class="tag" id="tg"></p>
+<div class="meta"><div><span>When</span><br><b id="hd"></b></div><div><span>Where</span><br><b id="hv"></b></div></div>
+<div class="status" id="st"></div><br><a href="#register" class="btn" id="hb">Register</a></div><img class="logo" id="hl" src="logo.png" alt="" onerror="this.remove()"></div></header>
+<main id="m"></main>
+<footer><div id="ft"></div></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.min.js"></script>
+<script src="tournament.config.js"></script><script src="firebase-init.js"></script><script src="app-compat.js"></script>
+<script>
+const $=id=>document.getElementById(id),peso=n=>'₱'+Math.round(+n||0).toLocaleString('en-PH');
+const sec=(id,t,lead,body,alt)=>`<section id="${id}" class="${alt?'alt':''}"><div class="wrap"><h2>${esc(t)}</h2>${lead?`<p class="lead">${lead}</p>`:''}${body}</div></section>`;
+const paras=s=>String(s).split(/\n\s*\n/).map(p=>`<p class="pre">${esc(p.trim())}</p>`).join('');
+function build(c,s){
+ document.title=c.title;$('nt').textContent=c.title;$('h1').textContent=c.title;$('tg').textContent=c.tagline;$('hd').textContent=c.date;$('hv').textContent=c.venue;
+ if(c.posterUrl){const h=$('top');h.classList.add('poster');h.style.backgroundImage=`linear-gradient(180deg,rgba(0,0,0,.15) 40%,var(--bg) 100%),url(${esc(c.posterUrl)})`;}
+ const F=k=>feature(c,k),st=mpoState(s),cats=c.categories,hasPrize=cats.some(x=>x.first||x.second||x.third),links=[cats.length>1&&['categories','Categories'],hasPrize&&['prizes','Prizes'],['info','Event info'],c.faqText&&['faq','FAQ'],F('statusChecker')&&['status.html','Check status'],F('registration')&&['register','Register']].filter(Boolean);
+ $('lk').innerHTML=links.map(l=>`<a href="${/\.html$/.test(l[0])?l[0]:'#'+l[0]}" ${l[0]==='register'?'class="btn" style="padding:9px 20px;margin-left:26px"':''}>${l[1]}</a>`).join('');
+ $('st').textContent=F('registration')?mpoStatusText(s,st):'';$('hb').classList.toggle('hide',!F('registration'));
+ if(F('countdown')&&st==='soon'){const t=Date.parse(s.open+'T'+c.openTime+':00+08:00'),tick=()=>{const d=Math.max(0,t-Date.now());$('st').textContent='Registration opens in '+Math.floor(d/864e5)+'d '+Math.floor(d%864e5/36e5)+'h '+Math.floor(d%36e5/6e4)+'m '+Math.floor(d%6e4/1e3)+'s';};tick();setInterval(tick,1000);}
+ let h=cats.length<2?'':sec('categories','Categories',`${cats.length} categories. Six players per team (3 men, 3 women).`,`<div class="panel"><table class="matrix"><tr><th>Category</th><th>Bracket</th><th>Slots</th></tr>${cats.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.bracket||'')}</td><td>${esc(x.slots||'')}</td></tr>`).join('')}</table></div>`);
+ if(hasPrize)h+=sec('prizes','Prizes','',`<div class="g2">${cats.filter(x=>x.first||x.second||x.third).map(x=>`<div class="panel"><h3>${esc(x.name)}</h3><div class="sub">${esc(x.prizeNote||'')}</div><table>${[['m1','Champion',x.first],['m2','2nd place',x.second],['m3','3rd place',x.third]].filter(r=>r[2]).map(r=>`<tr><td class="${r[0]}">${r[1]}</td><td class="n ${r[0]}">${esc(r[2])}</td></tr>`).join('')}</table></div>`).join('')}</div>`,1);
+ h+=sec('info','Event info',c.promoNote?esc(c.promoNote):'',`<div class="info"><div><b>${esc(c.date)}</b><span>Event dates</span></div><div><b>${esc(c.venue)}</b><span>Venue</span></div><div><b>Free</b><span>Entry fee</span></div><div><b>6 players</b><span>3 men + 3 women per team</span></div>${cats.length===1&&cats[0].slots?`<div><b>${esc(cats[0].slots)} teams</b><span>Team slots</span></div>`:''}</div>`+(c.regOpen?`<div class="tl" style="margin-top:40px"><div><b>${mpoFmt(c.regOpen,{month:'short',day:'numeric',year:'numeric'})}</b><span>Registration opens</span></div><div><b>${c.regClose?mpoFmt(c.regClose,{month:'short',day:'numeric',year:'numeric'}):'TBA'}</b><span>Registration closes</span></div><div><b>${esc(c.date)}</b><span>Tournament</span></div></div>`:''));
+ if(c.scheduleText)h+=sec('schedule','Schedule','',paras(c.scheduleText),1);
+ if(c.rulesText)h+=sec('rules','Rules','',paras(c.rulesText));
+ if(c.faqText)h+=sec('faq','FAQ','',c.faqText.split(/\n\s*\n/).map(b=>{const l=b.trim().split('\n');return `<details><summary>${esc(l[0])}</summary><p class="pre">${esc(l.slice(1).join('\n'))}</p></details>`}).join(''),1);
+ if(F('registration'))h+=sec('register','Team registration',esc(mpoStatusText(s,st)),st!=='open'?'':`<form id="f">${cats.length>1?`<label>Category</label><select name="category" id="cat" required><option value="">Select a category</option>${cats.map(x=>`<option>${esc(x.name)}</option>`).join('')}</select>`:`<input type="hidden" name="category" value="${esc((cats[0]||{}).name||'')}">`}
+<label>Team name</label><input name="team" required maxlength="60">
+<label>Team captain (contact person)</label><input name="captain" required maxlength="80">
+<label>Address</label><input name="address" required maxlength="160" placeholder="City / municipality, province">
+<div class="row"><div><label>Contact number</label><input name="phone" type="tel" required maxlength="30"></div><div><label>Email</label><input name="email" type="email" required maxlength="120"></div></div>
+<div class="row"><div><h3 class="gh">Male players</h3>${[1,2,3].map(n=>`<label>Male player ${n} full name</label><input name="m${n}" required maxlength="80">`).join('')}</div><div><h3 class="gh">Female players</h3>${[1,2,3].map(n=>`<label>Female player ${n} full name</label><input name="f${n}" required maxlength="80">`).join('')}</div></div>
+<p><button class="btn" id="sb">Submit registration</button></p><div id="out"></div></form>`);
+ $('m').innerHTML=h;
+ const co=c.contact;$('ft').innerHTML=esc(c.title)+(co.person||co.phone||co.email?'<br>Questions: '+[co.person,co.phone,co.email].filter(Boolean).map(esc).join(' · '):'')+(co.facebook?`<br><a href="${esc(co.facebook)}" rel="noopener">Facebook</a>`:'');
+ const f=$('f');if(!f)return;
+ f.onsubmit=async e=>{e.preventDefault();const b=$('sb'),o=$('out');b.disabled=true;const fd=new FormData(f),d={};fd.forEach((v,k)=>d[k]=String(v).trim());
+  const PK=['m1','m2','m3','f1','f2','f3'],norm=s=>String(s||'').replace(/\s+/g,' ').trim();
+  [...PK,'team','captain','address','phone'].forEach(k=>d[k]=norm(d[k]));
+  const bad=m=>{o.innerHTML='<div class="msg err">'+m+'</div>';b.disabled=false;};
+  if(['team','captain','address','phone',...PK].some(k=>!d[k]))return bad('Please fill in every field, including all 6 player names.');
+  const nm=PK.map(k=>d[k].toLowerCase());
+  if(new Set(nm).size<nm.length)return bad('Each of the 6 players must have a different name. Please check the names and try again.');
+  try{let code='';
+   /* the registration doc id IS the code; if a code is already taken Firestore refuses the write and we try a new one */
+   for(let i=0;i<6&&!code;i++){const c=newCode();try{await db.collection(REG).doc(c).set({...d,code:c,status:'Submitted',createdAt:firebase.firestore.FieldValue.serverTimestamp()});code=c;}catch(er){if(er.code!=='permission-denied'||i===5)throw er;}}
+   db.collection(COL.status).doc(code).set({team:d.team,category:d.category,finalCategory:'',decision:'',rejected:false,rejectReason:'',status:'Submitted',updatedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+   if(T.webhookUrl)fetch(T.webhookUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'submitted',email:d.email,team:d.team,category:d.category,captain:d.captain,phone:d.phone,address:d.address,m1:d.m1,m2:d.m2,m3:d.m3,f1:d.f1,f2:d.f2,f3:d.f3,code})}).catch(()=>{});
+   o.innerHTML='<div class="msg ok"><b>Registration received.</b><br>Your team code: <span class="mycode">'+code+'</span><br>Save this code. You will use it to check your status, and we also emailed it to you. Your slot is not confirmed yet. The committee will review your registration and contact you.</div>';f.reset();}
+  catch(err){o.innerHTML='<div class="msg err">We could not submit your registration. Please try again or contact the organizers.</div>';}b.disabled=false;};}
+CFG_READY.then(c=>build(c,cfgToSettings(c))).catch(()=>{});
+</script></body></html>
