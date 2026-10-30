@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="style.css"><style>.pre{white-space:pre-wrap}.hide{display:none!important}.opts{display:flex;gap:22px;flex-wrap:wrap}.gh{font-size:1.15rem;margin:24px 0 -6px;color:var(--mint)}.mycode{font:700 1.5rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.25em;color:var(--mint)}
 .hero h1{font-size:clamp(2rem,5vw,4rem);line-height:1.04}
 @media(min-width:761px){.hero .wrap{grid-template-columns:1.5fr 1fr}.hero .logo{max-width:400px}}
-nav .brand span{text-transform:none}.hero h1 .lc{text-transform:lowercase}ol.steps.rl{max-width:760px}ol.steps.rl li>div b{color:var(--mint);font-weight:700}
+nav .brand span{text-transform:none}.hero h1 sup{font-size:.5em;line-height:0;vertical-align:super;text-transform:lowercase}ol.steps.rl{max-width:760px}ol.steps.rl li>div b{color:var(--mint);font-weight:700}
 @media(max-width:760px){nav .brand span{font-size:.9rem;line-height:1.1}}</style></head><body>
 <nav><div class="wrap"><a class="brand" href="#top"><img id="nl" src="logo.png" alt="" onerror="this.remove()"><span id="nt"></span></a><div class="links" id="lk"></div></div></nav>
 <header class="hero" id="top"><div class="wrap"><div><h1 id="h1"></h1><p class="tag" id="tg"></p>
@@ -33,7 +33,7 @@ const RULES_HTML=`<ol class="steps rl">
 const sec=(id,t,lead,body,alt)=>`<section id="${id}" class="${alt?'alt':''}"><div class="wrap"><h2>${esc(t)}</h2>${lead?`<p class="lead">${lead}</p>`:''}${body}</div></section>`;
 const paras=s=>String(s).split(/\n\s*\n/).map(p=>`<p class="pre">${esc(p.trim())}</p>`).join('');
 function build(c,s){
- c.title=TITLE;document.title=TITLE;$('nt').textContent=TITLE;$('h1').innerHTML='72<span class="lc">nd</span> ANMSEC Dink and Mine Team Tournament Open 2026';$('tg').textContent=c.tagline;$('hd').textContent=c.date;$('hv').textContent=c.venue;
+ c.title=TITLE;document.title=TITLE;$('nt').textContent=TITLE;$('h1').innerHTML='72<sup>nd</sup> ANMSEC Dink and Mine Team Tournament Open 2026';$('tg').textContent=c.tagline;$('hd').textContent=c.date;$('hv').textContent=c.venue;
  if(c.posterUrl){const h=$('top');h.classList.add('poster');h.style.backgroundImage=`linear-gradient(180deg,rgba(0,0,0,.15) 40%,var(--bg) 100%),url(${esc(c.posterUrl)})`;}
  const F=k=>feature(c,k),st=mpoState(s),cats=c.categories,hasPrize=cats.some(x=>x.first||x.second||x.third),links=[cats.length>1&&['categories','Categories'],hasPrize&&['prizes','Prizes'],['info','Event info'],['rules','Rules'],['rules.html','Full guidelines'],c.faqText&&['faq','FAQ'],F('statusChecker')&&['status.html','Check status'],F('registration')&&['register','Register']].filter(Boolean);
  $('lk').innerHTML=links.map(l=>`<a href="${/\.html$/.test(l[0])?l[0]:'#'+l[0]}" ${l[0]==='register'?'class="btn" style="padding:9px 20px;margin-left:26px"':''}>${l[1]}</a>`).join('');
