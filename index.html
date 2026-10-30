@@ -21,6 +21,7 @@ const $=id=>document.getElementById(id),peso=n=>'₱'+Math.round(+n||0).toLocale
 const TITLE='72nd ANMSEC Dink and Mine';
 const RULES_HTML=`<ol class="steps rl">
 <li><div><b>Teams.</b> 20 teams of 6 players (3 men, 3 women). Only players on your approved roster may play, and company IDs of all six are verified before approval.</div></li>
+<li><div><b>Team name.</b> Choose a team name that represents your company and relates to pickleball. The best team name and logo wins an award. Send your logo to pmsea.pickleball@gmail.com once it is ready.</div></li>
 <li><div><b>Encounters.</b> Each encounter has Men’s, Women’s and Mixed Doubles. Every category win is 1 team point, and winning at least 2 categories wins the encounter.</div></li>
 <li><div><b>Elimination round.</b> 4 random brackets of 5 teams, single round-robin. The top 2 of each bracket advance.</div></li>
 <li><div><b>Quarterfinals.</b> 8 teams in 2 crossover brackets (E: top 2 of A and B; F: top 2 of C and D), single round-robin with standings reset. The top 2 of each advance.</div></li>
@@ -28,7 +29,7 @@ const RULES_HTML=`<ol class="steps rl">
 <li><div><b>Finals.</b> Best of five. Games 4 and 5 are Mixed Doubles with new pairings, and no partnership can repeat.</div></li>
 <li><div><b>Game scores.</b> Race to 11, no deuce (the next point at 10–10 wins). Finals are race to 15, win by two.</div></li>
 <li><div><b>Uniforms and awards.</b> Wear a coordinated team uniform to compete for the Best-Looking Team Uniform Award. Winners receive medals and cash prizes.</div></li>
-<li><div><b>Schedules.</b> The elimination round is on November 18, 2026. The quarterfinals, semifinals and championship finals are on November 19, 2026. Program starts at 8:00 AM on both days at Court 463, Baguio City. The bracket draw is announced on tournament day, and tie-break procedures are announced before the first match. Socials Night is on November 18.</div></li>
+<li><div><b>Schedules.</b> The elimination round is on November 18, 2026. The quarterfinals, semifinals and championship finals are on November 19, 2026. Matches start at 8:00 AM on both days at Court 463, Baguio City. The bracket draw is announced on tournament day, and tie-break procedures are announced before the first match. Socials Night is on November 18.</div></li>
 </ol>
 <p style="margin-top:28px">For the Complete Tournament Guideline, <a href="rules.html">click here</a>.</p>`;
 const sec=(id,t,lead,body,alt)=>`<section id="${id}" class="${alt?'alt':''}"><div class="wrap"><h2>${esc(t)}</h2>${lead?`<p class="lead">${lead}</p>`:''}${body}</div></section>`;
