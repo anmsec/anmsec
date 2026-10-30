@@ -18,7 +18,7 @@ nav .brand span{text-transform:none}.hero h1 sup{font-size:.5em;line-height:0;ve
 <script src="tournament.config.js"></script><script src="firebase-init.js"></script><script src="app-compat.js"></script>
 <script>
 const $=id=>document.getElementById(id),peso=n=>'₱'+Math.round(+n||0).toLocaleString('en-PH');
-const TITLE='72nd ANMSEC Dink and Mine';
+const TITLE='72nd ANMSEC Mine and Dink';
 const RULES_HTML=`<ol class="steps rl">
 <li><div><b>Teams.</b> 20 teams of 6 players (3 men, 3 women). Only players on your approved roster may play, and company IDs of all six are verified before approval.</div></li>
 <li><div><b>Team name.</b> Choose a team name that represents your company and relates to pickleball. The best team name and logo wins an award. Send your logo to pmsea.pickleball@gmail.com once it is ready.</div></li>
@@ -35,7 +35,7 @@ const RULES_HTML=`<ol class="steps rl">
 const sec=(id,t,lead,body,alt)=>`<section id="${id}" class="${alt?'alt':''}"><div class="wrap"><h2>${esc(t)}</h2>${lead?`<p class="lead">${lead}</p>`:''}${body}</div></section>`;
 const paras=s=>String(s).split(/\n\s*\n/).map(p=>`<p class="pre">${esc(p.trim())}</p>`).join('');
 function build(c,s){
- c.title=TITLE;document.title=TITLE;$('nt').textContent=TITLE;$('h1').innerHTML='72<sup>nd</sup> ANMSEC Dink and Mine Team Tournament Open 2026';$('tg').textContent=c.tagline;$('hd').textContent=c.date;$('hv').textContent=c.venue;
+ c.title=TITLE;document.title=TITLE;$('nt').textContent=TITLE;$('h1').innerHTML='72<sup>nd</sup> ANMSEC Mine and Dink Team Tournament Open 2026';$('tg').textContent=c.tagline;$('hd').textContent=c.date;$('hv').textContent=c.venue;
  if(c.posterUrl){const h=$('top');h.classList.add('poster');h.style.backgroundImage=`linear-gradient(180deg,rgba(0,0,0,.15) 40%,var(--bg) 100%),url(${esc(c.posterUrl)})`;}
  const F=k=>feature(c,k),st=mpoState(s),cats=c.categories,hasPrize=cats.some(x=>x.first||x.second||x.third),links=[cats.length>1&&['categories','Categories'],hasPrize&&['prizes','Prizes'],['info','Event info'],['rules','Rules'],['rules.html','Full guidelines'],c.faqText&&['faq','FAQ'],F('statusChecker')&&['status.html','Check status'],F('registration')&&['register','Register']].filter(Boolean);
  $('lk').innerHTML=links.map(l=>`<a href="${/\.html$/.test(l[0])?l[0]:'#'+l[0]}" ${l[0]==='register'?'class="btn" style="padding:9px 20px;margin-left:26px"':''}>${l[1]}</a>`).join('');
