@@ -15,7 +15,7 @@ const CONFIG = {
   PUBLIC_DAILY_CAP: 60                            // max automatic "received" emails per day
 };
 const FALLBACK = {
-  subjSubmitted: 'We received your registration - {title}', bodySubmitted: 'Hi {captain}, we received your registration for {title} (team {team}).\n\nYour team code is {code}. Check your status anytime at {portalUrl}?code={code}',
+  subjSubmitted: 'We received your registration - {title}', bodySubmitted: 'Hi {captain}, we received your registration for {title} (team {team}).\n\nYour team code is {code}. Keep it safe. You can check your status anytime at {portalUrl}?code={code}\n\nYour slot is not yet confirmed. The committee will review your registration and we will email you again.\n\nImportant!\nPlease reply to this email with the company IDs of the players for verification purposes.',
   subjInvite: 'You are accepted! Please confirm your slot - {title}', bodyInvite: 'Hi {captain}, your registration for {title} was accepted in {finalCategory}.\n\nPlease accept or decline before {deadline}.\n\nYour team code: {code}\nConfirm here: {confirmUrl}',
   subjRejected: 'Registration update - {title}', bodyRejected: 'Hi {captain}, we are sorry. Your registration for {title} was not accepted.\n\nReason: {reason}'
 };
@@ -78,11 +78,11 @@ function send_(action, d, cfg) {
   if (action === 'invite' && !base) throw new Error('Site link is not set. Open superadmin.html > Event > Site link, then Save settings.');
   const cat = d.finalCategory || d.category, portal = base + 'status.html', confirmUrl = base + 'confirm.html?code=' + code;
   const deadline = d.deadlineMs ? Utilities.formatDate(new Date(+d.deadlineMs), 'Asia/Manila', 'MMM d, yyyy h:mm a') + ' (PH time)' : '';
-  const vars = { title: cfg.title, team: d.team, captain: d.captain || d.team, players: d.captain || d.team, code: code, category: cat, finalCategory: cat, portalUrl: portal, confirmUrl: confirmUrl, hours: cfg.confirmHours || 48, deadline: deadline, reason: d.rejectReason || '' };
+  const vars = { title: cfg.title, team: d.team, captain: d.captain || d.team, company: d.company || '', players: d.captain || d.team, code: code, category: cat, finalCategory: cat, portalUrl: portal, confirmUrl: confirmUrl, hours: cfg.confirmHours || 48, deadline: deadline, reason: d.rejectReason || '' };
   const fill = function (s) { return String(s || '').replace(/\{(\w+)\}/g, function (m, k) { return vars[k] == null ? m : String(vars[k]); }); };
   const K = { submitted: ['subjSubmitted', 'bodySubmitted'], invite: ['subjInvite', 'bodyInvite'], rejection: ['subjRejected', 'bodyRejected'] }[action];
   const subject = em[K[0]] || FALLBACK[K[0]], body = em[K[1]] || FALLBACK[K[1]];
-  let rows = [['Team', d.team], ['Category', cat]], extra = '';
+  let rows = [['Team', d.team], ['Company / Affiliation', d.company], ['Category', cat]], extra = '';
   if (action === 'submitted' || action === 'invite') rows.push(['Team code', code]);
   if (action === 'invite') {
     rows.push(['Respond by', deadline]);

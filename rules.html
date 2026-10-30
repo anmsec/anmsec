@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tournament Rules and Guidelines | 72nd ANMSEC Dink and Mine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"><style>
+nav .brand span{text-transform:none}
+.gh{padding:72px 0 60px;background:radial-gradient(900px 500px at 85% 0,color-mix(in srgb,var(--em) 30%,transparent),transparent 60%),linear-gradient(180deg,var(--bg2),var(--bg))}
+.gh h1{font-size:clamp(2.6rem,7vw,5.2rem);margin:0 0 10px}
+.gh .ev{font:700 1.5rem 'Barlow Condensed',sans-serif;letter-spacing:.02em;color:var(--mint);margin:0}
+.gh .ev .lc{text-transform:none}
+.gh .intro{color:var(--mute);max-width:56ch;margin:14px 0 0}
+.path{display:grid;grid-template-columns:repeat(5,1fr);margin-top:52px;border-top:2px solid var(--mint)}
+.path>div{position:relative;padding:20px 18px 0 0}
+.path>div:before{content:"";position:absolute;top:-7px;left:0;width:12px;height:12px;border-radius:50%;background:var(--mint)}
+.path b{display:block;font:800 3.2rem/1 'Barlow Condensed',sans-serif}
+.path .st{display:block;font:800 1.15rem 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.02em;margin-top:2px}
+.path small{display:block;color:var(--mute);font-size:.92rem;line-height:1.4;margin-top:4px}
+.path .win:before{background:var(--gold)}.path .win b,.path .win .st{color:var(--gold)}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:56px;padding:56px 0 84px;align-items:start}
+.toc{position:sticky;top:96px;display:grid;border-left:1px solid var(--line)}
+.toc a{display:block;padding:7px 14px;margin-left:-1px;border-left:2px solid transparent;color:var(--mute);text-decoration:none;font-size:.93rem;transition:color .2s,border-color .2s}
+.toc a:hover,.toc a.on{color:var(--ink);border-left-color:var(--mint)}
+.rule{margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid var(--line);scroll-margin-top:96px;max-width:760px}
+.rule:last-of-type{border-bottom:0}
+.rule h2{font-size:clamp(1.8rem,4vw,2.4rem);margin-bottom:18px}
+.rule h2 .n{color:var(--mint);margin-right:12px}
+.rule p{margin:0 0 14px}
+.rule ul{list-style:none;margin:0 0 16px;padding:0}
+.rule li{position:relative;padding-left:24px;margin:10px 0}
+.rule li:before{content:"";position:absolute;left:0;top:.8em;width:12px;height:2px;background:var(--mint)}
+.rule .panel{margin:18px 0}
+.rule .panel td:first-child{font-weight:600}
+.seq{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.seq span{display:inline-flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 18px 8px 8px;font-weight:600}
+.seq i{font:800 1rem 'Barlow Condensed',sans-serif;font-style:normal;background:var(--mint);color:var(--on,#032015);border-radius:50%;width:28px;height:28px;display:grid;place-items:center}
+.seq .opt{border-style:dashed;color:var(--mute)}.seq .opt i{background:transparent;color:var(--mint);border:1px solid var(--mint)}
+.note{border-left:3px solid var(--gold);background:var(--panel);padding:14px 18px;border-radius:0 12px 12px 0;margin:18px 0}
+.cats{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+.cats span{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 18px;font:800 1.2rem 'Barlow Condensed',sans-serif;text-transform:uppercase}
+.contact{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 26px;display:grid;gap:4px}
+.contact b{font:800 1.4rem 'Barlow Condensed',sans-serif;text-transform:uppercase}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+@media(max-width:900px){
+ .layout{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:28px}
+ .toc{position:sticky;top:72px;z-index:5;display:flex;overflow-x:auto;border-left:0;border-bottom:1px solid var(--line);background:var(--bg)}
+ .toc a{white-space:nowrap;border-left:0;border-bottom:2px solid transparent;margin:0}
+ .toc a:hover,.toc a.on{border-bottom-color:var(--mint)}
+}
+@media(max-width:760px){
+ .gh{padding:44px 0 40px}
+ .path{grid-template-columns:1fr;border-top:0;border-left:2px solid var(--mint)}
+ .path>div{padding:0 0 24px 22px}.path>div:before{top:6px;left:-7px}
+ .path b{display:inline;font-size:2.4rem;margin-right:8px}.path .st{display:inline}
+ nav .brand span{font-size:.9rem;line-height:1.1}
+}
+</style></head><body>
+<nav><div class="wrap"><a class="brand" href="index.html"><img src="logo.png" alt="" onerror="this.remove()"><span>72nd ANMSEC Dink and Mine</span></a><div class="links"><a href="index.html#faq">FAQ</a><a href="index.html">Main site</a><a href="index.html#register" class="btn" style="padding:9px 20px;margin-left:26px">Register</a></div></div></nav>
+
+<header class="gh"><div class="wrap">
+<p class="ev">72<span class="lc">nd</span> ANMSEC Dink and Mine</p>
+<h1>Tournament rules and guidelines</h1>
+<p class="intro">The complete rules for team composition, match format, scoring and awards. Here is how 20 teams become one champion.</p>
+<div class="path">
+<div><b>20</b><span class="st">Elimination</span><small>4 brackets of 5, round-robin. Top 2 advance.</small></div>
+<div><b>8</b><span class="st">Quarterfinals</span><small>2 crossover brackets, round-robin. Top 2 advance.</small></div>
+<div><b>4</b><span class="st">Semifinals</span><small>Best of three, race to 11.</small></div>
+<div><b>2</b><span class="st">Finals</span><small>Best of five, race to 15, win by two.</small></div>
+<div class="win"><b>1</b><span class="st">Champion</span><small>Medals and cash prizes.</small></div>
+</div>
+</div></header>
+
+<div class="wrap layout">
+<aside class="toc" id="toc">
+<a href="#r1">Team composition</a><a href="#r2">Encounters and scoring</a><a href="#r3">Elimination round</a><a href="#r4">Quarterfinal round</a><a href="#r5">Semifinals</a><a href="#r6">Championship finals</a><a href="#r7">Game scores</a><a href="#r8">Bracketing and standings</a><a href="#r9">Team uniforms</a><a href="#r10">Awards</a><a href="#r11">Socials Night</a><a href="#r12">Administration</a><a href="#inq">Inquiries</a>
+</aside>
+<main>
+
+<section class="rule" id="r1"><h2><span class="n">1</span>Team composition and registration</h2>
+<ul>
+<li>The tournament is open to 20 teams, each composed of six players: three male and three female.</li>
+<li>Each team registers under a team name of its choice and states its company or affiliation in the registration form.</li>
+<li>Teams must submit the company IDs of all six members for verification before registration is approved.</li>
+<li>Players participating in any match must come from the team’s approved six-member roster.</li>
+</ul></section>
+
+<section class="rule" id="r2"><h2><span class="n">2</span>Team encounters and scoring</h2>
+<p>Each team encounter consists of three categories:</p>
+<div class="cats"><span>Men’s Doubles</span><span>Women’s Doubles</span><span>Mixed Doubles</span></div>
+<p>Each category win earns one team point.</p>
+<p>During the elimination and quarterfinal rounds, all three categories shall be played. The team winning at least two categories wins the encounter. Category-win points shall be accumulated to determine bracket standings.</p></section>
+
+<section class="rule" id="r3"><h2><span class="n">3</span>Elimination round</h2>
+<ul>
+<li>The 20 teams shall be randomly divided into four brackets of five teams each.</li>
+<li>Each bracket shall follow a single round-robin format, with every team facing the other four teams in its bracket.</li>
+<li>The top two teams in each bracket shall advance to the quarterfinals.</li>
+</ul></section>
+
+<section class="rule" id="r4"><h2><span class="n">4</span>Quarterfinal round: crossover round robin</h2>
+<p>The eight qualifying teams shall form two quarterfinal brackets:</p>
+<div class="panel"><table class="matrix"><tr><th>Quarterfinal bracket</th><th>Qualifying teams</th></tr><tr><td>Bracket E</td><td>Top two teams from Brackets A and B</td></tr><tr><td>Bracket F</td><td>Top two teams from Brackets C and D</td></tr></table></div>
+<ul>
+<li>Each quarterfinal bracket shall follow a single round-robin format.</li>
+<li>Standings shall start anew; elimination-round points shall not carry over.</li>
+<li>Every team shall face the other three teams in its quarterfinal bracket.</li>
+<li>The top two teams from each bracket shall advance to the semifinals.</li>
+</ul></section>
+
+<section class="rule" id="r5"><h2><span class="n">5</span>Semifinals: best of three</h2>
+<p>The four qualifying teams shall compete through crossover matches:</p>
+<ul>
+<li>Semifinal 1: Bracket E Rank 1 vs. Bracket F Rank 2</li>
+<li>Semifinal 2: Bracket F Rank 1 vs. Bracket E Rank 2</li>
+</ul>
+<p>Each encounter shall follow this sequence:</p>
+<div class="seq"><span><i>1</i>Men’s Doubles</span><span><i>2</i>Women’s Doubles</span><span class="opt"><i>3</i>Mixed Doubles, if needed</span></div>
+<p>The first team to win two games advances to the championship finals.</p>
+<p>The two losing semifinalists shall compete for third place, using the same best-of-three format and game sequence.</p></section>
+
+<section class="rule" id="r6"><h2><span class="n">6</span>Championship finals: best of five</h2>
+<p>The championship encounter shall follow this sequence:</p>
+<div class="seq"><span><i>1</i>Men’s Doubles</span><span><i>2</i>Women’s Doubles</span><span><i>3</i>Mixed Doubles</span><span class="opt"><i>4</i>Mixed Doubles, new pairing, if needed</span><span class="opt"><i>5</i>Mixed Doubles, another new pairing, if needed</span></div>
+<p>The first team to win three games shall be declared champion.</p>
+<div class="note">For Games 4 and 5, teams must select players from their approved six-member roster. Each pair must consist of one male and one female, and no mixed-doubles partnership may be repeated within the championship encounter. Individual players may play again with a different partner.</div></section>
+
+<section class="rule" id="r7"><h2><span class="n">7</span>Game scores</h2>
+<div class="panel"><table class="matrix"><tr><th>Tournament stage</th><th>Winning score</th></tr>
+<tr><td>Elimination round</td><td>Race to 11; no deuce</td></tr>
+<tr><td>Quarterfinals</td><td>Race to 11; no deuce</td></tr>
+<tr><td>Semifinals</td><td>Race to 11; no deuce</td></tr>
+<tr><td>Third-place playoff</td><td>Race to 11; no deuce</td></tr>
+<tr><td>Championship finals</td><td>Race to 15; win by two</td></tr></table></div>
+<ul>
+<li>For games without deuce, the next point at 10–10 wins the game.</li>
+<li>For championship games, play shall continue at 14–14 until one pair leads by two points.</li>
+</ul></section>
+
+<section class="rule" id="r8"><h2><span class="n">8</span>Bracketing and standings</h2>
+<ul>
+<li>The initial bracket draw shall be conducted randomly and announced on tournament day.</li>
+<li>Elimination and quarterfinal standings shall be based on total category-win points.</li>
+<li>Procedures for resolving tied standings shall be announced by the organizers before the first match.</li>
+</ul></section>
+
+<section class="rule" id="r9"><h2><span class="n">9</span>Team uniforms</h2>
+<ul>
+<li>Each team shall wear its own coordinated tournament uniform.</li>
+<li>A special Best-Looking Team Uniform Award shall be presented.</li>
+</ul></section>
+
+<section class="rule" id="r10"><h2><span class="n">10</span>Awards</h2>
+<p>Tournament winners shall receive medals and cash prizes. Prize amounts and award details shall be announced by the organizers.</p></section>
+
+<section class="rule" id="r11"><h2><span class="n">11</span>Socials Night</h2>
+<p>All participants are encouraged to attend the Socials Night on November 18. Raffle prizes may be available, subject to confirmation.</p></section>
+
+<section class="rule" id="r12"><h2><span class="n">12</span>Tournament administration</h2>
+<p>The tournament organizers reserve the right to modify the tournament format as necessary. Any changes shall be communicated to participating teams.</p></section>
+
+<section class="rule" id="inq"><h2>Inquiries</h2>
+<div class="contact"><span>Email: <a href="mailto:pmsea.pickleball@gmail.com">pmsea.pickleball@gmail.com</a></span><span>Contact number: <a href="tel:+639273978617">09273978617</a></span></div>
+<div class="cta"><a class="btn" href="index.html#register">Register your team</a><a class="btn ghost" href="index.html">Back to main page</a></div></section>
+
+</main></div>
+
+<footer><div>72nd ANMSEC Dink and Mine<br>Questions: pmsea.pickleball@gmail.com · 09273978617</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-firestore-compat.min.js"></script>
+<script src="tournament.config.js"></script><script src="firebase-init.js"></script><script src="app-compat.js"></script>
+<script>
+/* same config + theme scripts as index.html, so the admin-selected theme applies here too */
+try{if(typeof CFG_READY!=='undefined')CFG_READY.catch(function(){});}catch(e){}
+/* highlight the current section in the contents list */
+(function(){
+ var links=[].slice.call(document.querySelectorAll('#toc a')),map={};
+ links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+ if(!('IntersectionObserver' in window))return;
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.remove('on');});var a=map[e.target.id];if(a){a.classList.add('on');if(window.innerWidth<=900)a.scrollIntoView({inline:'center',block:'nearest'});}}});},{rootMargin:'-20% 0px -70% 0px'});
+ document.querySelectorAll('.rule').forEach(function(s){io.observe(s);});
+})();
+</script>
+</body></html>
