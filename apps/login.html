@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in | 72nd ANMSEC Mine and Dink</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#0a7a4f;--gd:#10261b;--line:#d4e5dc;--mute:#5b7266}
+*{box-sizing:border-box;margin:0}html,body{min-height:100%}
+body{font:16px/1.45 'Barlow',system-ui,sans-serif;color:var(--gd);display:grid;grid-template-columns:1.15fr 1fr;min-height:100vh}
+h1,h2{font-family:'Barlow Condensed',sans-serif;font-weight:800}
+.brand{background:linear-gradient(165deg,#12a06a,#0a7a4f 45%,#0b4a30);color:#fff;padding:clamp(28px,5vw,72px);display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.brand::before{content:"";position:absolute;inset:0;opacity:.4;background-image:radial-gradient(rgba(255,255,255,.3) 1px,transparent 1px);background-size:3px 3px}
+.brand>*{position:relative}.brand img{width:150px;max-width:40%;margin-bottom:22px}
+.brand h1{font-size:clamp(2.6rem,6vw,5rem);line-height:1;text-transform:uppercase}.brand p{margin-top:16px;max-width:34ch;color:#e3f6ec;font-size:1.1rem}
+.panel{display:flex;align-items:center;justify-content:center;padding:clamp(24px,5vw,64px);background:#f3f9f6}
+.form{width:100%;max-width:390px}h2{font-size:2.4rem;text-transform:uppercase}.sub{color:var(--mute);margin:8px 0 22px;font-size:.95rem}
+.f{position:relative;margin-bottom:12px}
+.f input{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:14px 46px 14px 14px;font:inherit;color:var(--gd)}
+.f input:focus{outline:2px solid var(--g);outline-offset:1px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;cursor:pointer;padding:8px;font-size:16px}
+.btn{width:100%;border-radius:10px;padding:14px;font:700 16px 'Barlow',sans-serif;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:10px}
+.btn:disabled{opacity:.6;cursor:not-allowed}.main{margin-top:10px;background:var(--g);color:#fff;border:0}
+.go{background:#fff;color:var(--gd);border:1px solid var(--line);margin-top:12px}
+.or{display:flex;align-items:center;gap:12px;color:#8aa395;font-size:13px;margin-top:14px}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.al{display:none;margin-top:16px;border-radius:10px;padding:12px 14px;font-size:.95rem}.al.show{display:block}
+.al.err{background:#fdecee;border:1px solid #f0b8be;color:#8d1420}.al.warn{background:#fff4e5;border:1px solid #f5cf99;color:#8a4b00}.al b{display:block}
+.help{margin-top:20px;text-align:center;color:var(--mute);font-size:.92rem}.help a{color:var(--g);font-weight:600}
+@media(max-width:860px){body{grid-template-columns:1fr}.brand{padding:26px 24px}.brand img{width:80px}.brand h1{font-size:2.6rem}.brand p{display:none}}
+</style></head><body>
+<section class="brand"><img src="logo.png" alt="" onerror="this.remove()"><h1>72nd ANMSEC<br>Mine and Dink</h1><p>Tournament management: teams, schedules, scores and standings.</p></section>
+<section class="panel"><div class="form">
+<h2>Welcome back!</h2><p class="sub">Accounts are created by a superadmin. Don’t have one yet? Ask the organizers.</p>
+<form id="lf" novalidate>
+<div class="f"><input id="u" placeholder="Username" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus></div>
+<div class="f"><input id="p" type="password" placeholder="Password" autocomplete="current-password"><button type="button" class="eye" id="eye" aria-label="Show or hide password">👁</button></div>
+<button class="btn main" id="bl" type="submit">Log in</button><div class="or">or</div>
+<button class="btn go" id="bg" type="button"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 7l7.2 5.6c4.3-4 6.8-9.9 6.8-17.1z"/><path fill="#FBBC05" d="M10.5 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.1.8-4.6l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.2-5.6c-2 1.4-4.6 2.2-8.7 2.2-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>Login with Google</button>
+</form><div class="al" id="al" role="alert"></div>
+<p class="help">Forgot your password? <a>Contact a superadmin.</a></p></div></section>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const $ = id => document.getElementById(id), auth = firebase.auth(), DOM = '@anmsec.app';   // username -> username@anmsec.app behind the scenes
+const SUPERS = ['ton.quinton@gmail.com', 'pmsea.pickleball@gmail.com', 'cklatiza@gmail.com'];
+let routing = false;
+const show = (k, t, x) => { const a = $('al'); a.className = 'al show ' + k; a.innerHTML = (t ? '<b></b>' : '') + '<span></span>'; if (t) a.querySelector('b').textContent = t; a.querySelector('span').textContent = x || ''; };
+const busy = on => { $('bl').disabled = $('bg').disabled = on; $('bl').textContent = on ? 'Signing in…' : 'Log in'; };
+$('eye').onclick = () => { const p = $('p'), s = p.type === 'password'; p.type = s ? 'text' : 'password'; $('eye').textContent = s ? '🙈' : '👁'; };
+if (new URLSearchParams(location.search).get('reason') === 'denied') show('warn', 'Not approved', 'This account has no access yet. Ask a superadmin.');
+async function deny(t, x) { routing = true; try { await auth.signOut(); } catch (e) {} routing = false; busy(false); show('err', t, x); }
+async function route(u) {
+  if (routing) return; routing = true; busy(true);
+  try {
+    const mail = (u.email || '').toLowerCase(), g = u.providerData.some(p => p.providerId === 'google.com'); let ok = false, dest = 'admin.html', F = firebase.firestore();
+    if (g) { if (!u.emailVerified) { routing = false; return deny('Email not verified', 'Use a verified Google account.'); } ok = SUPERS.includes(mail) || (await F.collection('admins').doc(mail).get()).exists; if (!ok) { ok = (await F.collection('scorers').doc(mail).get()).exists; dest = 'scorers.html'; } }
+    else { const d = await firebase.firestore().collection('users').doc(u.uid).get(); ok = d.exists && d.data().active === true; if (ok && d.data().role === 'scorer') dest = 'scorers.html'; }
+    if (!ok) { routing = false; return deny('Not approved', g ? `${mail} has no access yet. Ask a superadmin to add it.` : 'Your account is not active. Contact a superadmin.'); }
+    location.replace(dest);
+  } catch (e) { routing = false; deny('Could not verify your account', e.code === 'permission-denied' ? 'Firestore rules are not published yet, or this account has no access.' : 'Check your connection and try again.'); }
+}
+auth.onAuthStateChanged(u => { if (u) route(u); });
+$('lf').addEventListener('submit', async e => {
+  e.preventDefault(); $('al').className = 'al'; const n = $('u').value.trim().toLowerCase(), p = $('p').value;
+  if (!n || !p) return show('err', '', 'Enter your username and password.');
+  busy(true);
+  try { await auth.signInWithEmailAndPassword(n + DOM, p); } catch (err) {
+    busy(false); const c = err.code;
+    if (c === 'auth/too-many-requests') show('warn', 'Too many attempts', 'Wait a few minutes and try again.');
+    else if (c === 'auth/operation-not-allowed') show('err', 'Setup needed', 'Enable Email/Password in Firebase Authentication.');
+    else if (c === 'auth/network-request-failed') show('err', 'No connection', 'Check your internet and try again.');
+    else show('err', '', 'Incorrect username or password.');
+  }
+});
+$('bg').addEventListener('click', async () => {
+  $('al').className = 'al'; busy(true);
+  try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); } catch (err) {
+    busy(false); const c = err.code;
+    if (c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request') return;
+    if (c === 'auth/popup-blocked') show('warn', 'Pop-up blocked', 'Allow pop-ups for this page and try again.');
+    else if (c === 'auth/unauthorized-domain') show('err', 'Setup needed', 'Add this domain in Firebase, Authentication, Settings, Authorized domains.');
+    else if (c === 'auth/operation-not-allowed') show('err', 'Setup needed', 'Enable Google sign-in in Firebase Authentication.');
+    else show('err', 'Google sign-in failed', err.message);
+  }
+});
+</script></body></html>

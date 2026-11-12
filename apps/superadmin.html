@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ANMSEC Superadmin</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>body{max-width:760px;margin:auto;padding:18px;display:grid;gap:14px}h1{font-size:32px}h2{font-size:22px;margin-bottom:6px}.g{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px 10px;margin-top:6px}.g span{flex:1}
+#main[hidden]{display:none!important}button.d{background:#b3261e}#msg{color:#b3261e}</style></head><body>
+<h1>Superadmin</h1><p class="hint"><a href="admin.html">Back to admin</a> · <a href="#" onclick="firebase.auth().signOut();return false">Sign out</a> · <span id="me"></span></p><p id="msg" role="alert"></p>
+<div id="main" hidden style="display:grid;gap:14px">
+<div class="card"><h2>Create account</h2><p class="hint">Makes a username and password login (no email needed). Role "scorer" can edit teams and scores. Role "admin" can also manage scorers.</p><div class="row"><input id="nn" placeholder="Name (optional)" style="max-width:170px"><input id="nu" placeholder="Username" autocapitalize="none" style="max-width:150px"><input id="np" type="text" placeholder="Password" style="max-width:150px"><select id="nr" style="max-width:110px"><option value="scorer">scorer</option><option value="admin">admin</option></select><button id="mk">Create</button></div><p id="cm" class="hint"></p><div id="uList"></div></div>
+<div class="card"><h2>Superusers (Google email)</h2><p class="hint">Superadmins (ton.quinton and pmsea.pickleball) and cklatiza@gmail.com are built into the rules. Add others here. They can edit everything and approve scorers.</p><div class="row"><input id="adm" type="email" placeholder="email" style="max-width:300px"><button id="admAdd">Add</button></div><div id="admList"></div></div>
+<div class="card"><h2>Scorers</h2><div class="row"><input id="sc" type="email" placeholder="email" style="max-width:300px"><button id="scAdd">Add</button></div><div id="scList"></div></div>
+<div class="card"><h2>Danger zone</h2><p class="hint">Deletes data for everyone. Cannot be undone.</p><div class="row"><button class="d" id="clrScores">Clear all scores</button><button class="d" id="clrTeams">Delete all teams and scores</button></div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script><script src="superadmin.js"></script></body></html>

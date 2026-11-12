@@ -1,0 +1,13 @@
+:root{--bg:#f3f9f6;--panel:#fff;--line:#d4e5dc;--g:#0a7a4f;--gd:#10261b;--gl:#dcefe6;--gold:#c98a00;--ink:#10261b;--mute:#5b7266}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.35 'Barlow',system-ui,sans-serif}
+h1,h2,.cd{font-family:'Barlow Condensed',sans-serif;font-weight:700}
+button{font:600 15px 'Barlow',sans-serif;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;color:#fff;background:var(--g)}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--gd)}
+button.on,.tab.on{background:var(--gd);color:#fff}
+button:disabled{opacity:.4}
+input,select{font:inherit;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:#fff;color:var(--ink);width:100%}
+:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.hint{color:var(--mute);font-size:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ANMSEC Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+body{padding:12px 18px;display:flex;flex-direction:column;gap:10px;min-height:100vh}
+h1{font-size:30px;color:var(--gd)}h2{font-size:20px;margin-bottom:6px;color:var(--gd)}
+.tab{background:transparent;border:1px solid var(--line);color:var(--gd);padding:7px 14px}
+.panel{display:none;flex-direction:column;gap:10px}.panel.on{display:flex}
+#cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:start}
+.col{min-height:160px}.col.over{outline:3px solid var(--gold)}
+.tc{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:5px 8px;margin-top:6px;cursor:grab;background:#f8fdf9}
+.tc.over{outline:2px solid var(--gold)}
+.tc img{width:30px;height:30px;object-fit:contain}.tc span{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tc button{padding:3px 8px;font-size:13px}
+.g{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:#fff;margin-top:6px}
+.g b{color:var(--gold);width:48px;font:700 18px 'Barlow Condensed'}.g span{flex:1}.g em{font-style:normal;font-weight:700;color:var(--g)}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+table{width:100%;border-collapse:collapse}th{color:var(--mute);font-size:13px}td,th{text-align:center;padding:4px;border-top:1px solid var(--line)}td.n{text-align:left}tr.q td{background:var(--gl)}
+.po{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.m{border:1px solid var(--line);border-radius:10px;padding:8px;margin-top:8px;background:#f8fdf9}
+.m div{display:flex;justify-content:space-between;padding:2px 0}.m .w{font-weight:700;color:var(--g)}
+dialog{margin:auto;border:1px solid var(--line);border-radius:16px;padding:18px;width:min(560px,94vw);color:var(--ink)}
+dialog::backdrop{background:#0006}.mem{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+#sTab td{padding:4px}#sTab input{text-align:center}
+#preview{height:44px;width:44px;object-fit:contain}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--gd);color:#fff;padding:10px 18px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none}#toast.show{opacity:1}
+</style></head><body>
+<div class="row"><h1>ANMSEC Mine and Dink</h1>
+<nav class="row"><button class="tab on" data-p="teams">Teams</button><button class="tab" data-p="sched">Schedule</button><button class="tab" data-p="stand">Standings</button><button class="tab" data-p="play">Playoffs</button><button class="tab" data-p="scorers" id="tabSc" hidden>Scorers</button></nav>
+<span class="row" id="who" style="margin-left:auto"></span><span class="row" id="tvBtns" ><span class="hint">TV:</span>
+<button class="ghost" data-m="title">Title</button><button class="ghost" data-m="pools">Pools</button><button class="ghost" data-m="schedule">Schedule</button><button class="ghost" data-m="standings">Standings</button><button class="ghost" data-m="bracket">Bracket</button><button class="ghost" data-m="blank">Blank</button></span></div>
+<section class="panel on" id="p-teams"><div class="row"><span class="hint" id="count"></span><button id="addTeam">+ Add team</button><span class="hint">Drag a team into a pool column. Drop on another team to place it before. Click a team to edit.</span></div><div id="cols"></div></section>
+<section class="panel" id="p-sched"><div id="sched" class="sg"></div></section>
+<section class="panel" id="p-stand"><span class="hint">Top 2 of each pool (green) advance. Rank: match wins, then game wins, then point differential, then points for. Only finished matches count (2 game wins).</span><div id="stand" class="sg"></div></section>
+<section class="panel" id="p-play"><span class="hint">Bracket fills in automatically after each pool is complete. Winners advance when a team reaches the needed game wins (2; final needs 3).</span><div class="po" id="po"></div></section>
+<section class="panel" id="p-scorers"><span class="hint">Approved Google emails can enter scores only, on scorers.html. For username and password accounts, use the Superadmin page. Only superusers see this tab.</span><div class="row"><input id="scMail" type="email" placeholder="scorer@email.com" style="max-width:320px"><button id="scAdd">Add scorer</button></div><div id="scList"></div></section>
+<dialog id="dlg"><h2 id="dt">Team</h2>
+<div class="row"><input id="name" placeholder="Team name" maxlength="30" autocomplete="off" style="flex:1"><label class="hint" style="cursor:pointer;border:1px dashed var(--line);padding:8px 12px;border-radius:10px">Logo<input type="file" id="logoIn" accept="image/*" hidden></label><img id="preview" alt="" hidden></div>
+<div class="mem"><input class="m1" placeholder="Man 1" maxlength="30"><input class="m1" placeholder="Woman 1" maxlength="30"><input class="m1" placeholder="Man 2" maxlength="30"><input class="m1" placeholder="Woman 2" maxlength="30"><input class="m1" placeholder="Man 3" maxlength="30"><input class="m1" placeholder="Woman 3" maxlength="30"></div>
+<p class="hint">Men's Doubles: Man 1 + Man 2. Women's Doubles: Woman 1 + Woman 2. Mixed: Man 3 + Woman 3.</p>
+<div class="row" style="margin-top:10px"><button id="save">Save</button><button class="ghost" id="cancel">Cancel</button><button class="ghost" id="del" style="margin-left:auto">Delete team</button></div></dialog>
+<dialog id="sdlg"><h2 id="sTitle"></h2><table id="sTab"><tr><th></th><th id="sA"></th><th id="sB"></th></tr></table><p class="hint" id="sRes" style="margin:10px 0"></p>
+<div class="row"><button id="sSave">Save</button><button class="ghost" id="sCancel">Cancel</button><button class="ghost" id="sClear" style="margin-left:auto">Clear</button></div></dialog>
+<div id="toast" role="status"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script><script src="scoring.js"></script><script src="admin.js"></script>
+</body></html>

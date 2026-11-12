@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function verified() { return request.auth != null && request.auth.token.email_verified == true; }
+    function mail() { return request.auth.token.email.lower(); }
+    function doc(c, k) { return /databases/$(database)/documents/$(c)/$(k); }
+    function userActive() { return request.auth != null && exists(doc('users', request.auth.uid)) && get(doc('users', request.auth.uid)).data.active == true; }
+    function userRole() { return get(doc('users', request.auth.uid)).data.role; }
+
+    // Superadmins: can create accounts and manage everyone
+    function isRoot() { return verified() && mail() in ['ton.quinton@gmail.com', 'pmsea.pickleball@gmail.com']; }
+    // Superusers: can edit everything and approve scorers
+    function isSuper() {
+      return isRoot() || (verified() && (mail() == 'cklatiza@gmail.com' || exists(doc('admins', mail()))))
+        || (userActive() && userRole() == 'admin');
+    }
+    function isScorer() { return (verified() && exists(doc('scorers', mail()))) || (userActive() && userRole() == 'scorer'); }
+    function canEdit() { return isSuper() || isScorer(); }
+
+    // Scorers (Google email or username account) can write scores only. Teams, settings and TV mode are for superusers.
+    match /teams/{id}      { allow read: if true; allow write: if isSuper(); }
+    match /scores/{id}     { allow read: if true; allow write: if canEdit(); }
+    match /tournament/{id} { allow read: if true; allow write: if isSuper(); }
+    match /scorers/{email} { allow read: if canEdit(); allow write: if isSuper(); }
+    match /admins/{email}  { allow read: if request.auth != null; allow write: if isRoot(); }
+    // Username accounts made by a superadmin: users/{uid} = {username, name, role: 'scorer'|'admin', active}
+    match /users/{uid}     { allow read: if request.auth != null && (request.auth.uid == uid || isRoot()); allow write: if isRoot(); }
+  }
+}
