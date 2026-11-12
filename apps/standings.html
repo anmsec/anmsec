@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Standings | 72nd ANMSEC Mine and Dink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pub.css"></head>
-<body data-page="standings"><nav><div class="in"><a class="brand" href="index.html"><img src="logo.png" alt="" onerror="this.remove()"><span>72nd ANMSEC Mine and Dink</span></a>
-<a class="l" href="schedule.html">Schedule</a><a class="l on" href="standings.html">Standings</a><a class="l" href="index.html">Main site</a></div></nav>
-<main class="wrap"><h1>Standings</h1><p class="sub">Live pool standings and playoff bracket.</p><div id="out"></div></main>
+<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pub.css">
+<style>nav .brand span{text-transform:none}@media(max-width:760px){nav .brand span{font-size:.9rem;line-height:1.1}}</style></head>
+<body data-page="standings">
+<nav><div class="wrap"><a class="brand" href="index.html"><img src="logo.png" alt="" onerror="this.remove()"><span>72nd ANMSEC Mine and Dink</span></a><div class="links"><a href="schedule.html" class="pub">Schedule</a><a href="standings.html" class="pub on">Standings</a><a href="rules.html">Rules</a><a href="index.html#faq">FAQ</a><a href="index.html">Main site</a><a href="index.html#register" class="btn" style="padding:9px 20px;margin-left:26px">Register</a></div></div></nav>
+<header class="ph"><div class="wrap"><p class="ev">72<span class="lc">nd</span> ANMSEC Mine and Dink</p><h1>Standings</h1><p class="intro">Live bracket standings and playoff results.</p></div></header>
+<main class="wrap"><div id="out"></div></main>
+<footer><div>72nd ANMSEC Mine and Dink<br>Questions: pmsea.pickleball@gmail.com · 09273978617</div></footer>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script><script src="scoring.js"></script><script src="pub.js"></script></body></html>

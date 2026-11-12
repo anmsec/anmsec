@@ -107,13 +107,13 @@ function renderStand() {
 }
 function renderPO() {
   const box = $('#po'); box.replaceChildren(); const M = bracket();
-  [['Quarterfinals', 0, 4], ['Semifinals', 4, 6], ['Final (first to 3 of 5)', 6, 7]].forEach(([h, s, e]) => {
+  [['Quarterfinals', 0, 4], ['Semifinals', 4, 6], ['Battle for 3rd', 7, 8], ['Final (first to 3 of 5)', 6, 7]].forEach(([h, s, e]) => {
     const c = mk('div', 'card'); c.append(mk('h2', '', h));
     M.slice(s, e).forEach(m => {
       const d = mk('div', 'm'), a = mk('div'), b = mk('div'); a.append(mk('span', m.win && m.win === m.a ? 'w' : '', m.a ? tn(m.a) : m.la), mk('span', '', m.r.done || m.r.a + m.r.b ? m.r.a : ''));
       b.append(mk('span', m.win && m.win === m.b ? 'w' : '', m.b ? tn(m.b) : m.lb), mk('span', '', m.r.done || m.r.a + m.r.b ? m.r.b : '')); d.append(mk('small', 'hint', m.id), a, b);
       const bt = mk('button', 'ghost', 'Score'); bt.disabled = !(m.a && m.b); bt.style.marginTop = '6px';
-      bt.addEventListener('click', () => openScore({ pid: m.pid, a: m.a, b: m.b, need: m.need, games: m.id === 'F' ? 5 : 3, title: m.id === 'F' ? 'Final' : m.id })); d.append(bt); c.append(d);
+      bt.addEventListener('click', () => openScore({ pid: m.pid, a: m.a, b: m.b, need: m.need, games: m.id === 'F' ? 5 : 3, title: m.id === 'F' ? 'Final' : m.id === 'B3' ? 'Battle for 3rd' : m.id })); d.append(bt); c.append(d);
     });
     box.append(c);
   });
@@ -152,7 +152,7 @@ $('#scAdd').addEventListener('click', async () => {
 /* ---------- schedule maker + scoresheets (replaces the simple schedule list) ---------- */
 (() => {
   const p = $('#p-sched'), bar = mk('div', 'row'); p.prepend(bar);
-  bar.innerHTML = '<button class="ghost" id="cfgBtn" title="Schedule settings" aria-label="Schedule settings" style="font-size:20px;padding:6px 12px">⚙</button><button class="ghost" id="pr1">Print Day 1 scoresheets</button><button class="ghost" id="pr2">Print Day 2 scoresheets</button><span class="hint">Day 1: Pool A+B first, then C+D. Day 2: quarterfinals, semifinals, final. Scoresheets: 4 per A4 page.</span>';
+  bar.innerHTML = '<button class="ghost" id="cfgBtn" title="Schedule settings" aria-label="Schedule settings" style="font-size:20px;padding:6px 12px">⚙</button><button class="ghost" id="pr1">Print Day 1 scoresheets</button><button class="ghost" id="pr2">Print Day 2 scoresheets</button><span class="hint">Day 1: Pool A+B first, then C+D. Day 2: quarterfinals, semifinals, battle for 3rd, final. Scoresheets: 4 per A4 page.</span>';
   const dl = mk('dialog'); dl.id = 'cdlg';
   dl.innerHTML = '<h2>Schedule settings</h2><div id="cgrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin-top:10px"></div><div class="row" style="margin-top:14px"><button id="cfgSave">Save</button><button class="ghost" id="cfgCancel">Cancel</button></div>';
   document.body.append(dl);
@@ -176,6 +176,7 @@ $('#scAdd').addEventListener('click', async () => {
 const fillCfg = () => {};
 function renderSched() {
   fillCfg(); const box = $('#sched'); box.replaceChildren(); const c = cfg();
+  { const bad = planIssues(plan()), h = mk('p', 'hint', bad.length ? 'Team conflicts: ' + bad.join('; ') : 'No team conflicts: no team plays two games at the same time.'); if (bad.length) h.style.color = '#c0392b'; box.append(h); }
   [1, 2].forEach(day => {
     const card = mk('div', 'card'); card.style.marginTop = '10px'; card.append(mk('h2', '', `Day ${day} · ${c['d' + day].date}`));
     plan().filter(x => x.day === day).forEach(g => {

@@ -53,8 +53,8 @@ async function route(u) {
   if (routing) return; routing = true; busy(true);
   try {
     const mail = (u.email || '').toLowerCase(), g = u.providerData.some(p => p.providerId === 'google.com'); let ok = false, dest = 'admin.html', F = firebase.firestore();
-    if (g) { if (!u.emailVerified) { routing = false; return deny('Email not verified', 'Use a verified Google account.'); } ok = SUPERS.includes(mail) || (await F.collection('admins').doc(mail).get()).exists; if (!ok) { ok = (await F.collection('scorers').doc(mail).get()).exists; dest = 'scorers.html'; } }
-    else { const d = await firebase.firestore().collection('users').doc(u.uid).get(); ok = d.exists && d.data().active === true; if (ok && d.data().role === 'scorer') dest = 'scorers.html'; }
+    if (g) { if (!u.emailVerified) { routing = false; return deny('Email not verified', 'Use a verified Google account.'); } ok = SUPERS.includes(mail) || (await F.collection('admins').doc(mail).get()).exists; if (!ok) { ok = (await F.collection('scorers').doc(mail).get()).exists; dest = 'scores.html'; } }
+    else { const d = await firebase.firestore().collection('users').doc(u.uid).get(); ok = d.exists && d.data().active === true; if (ok && d.data().role === 'scorer') dest = 'scores.html'; }
     if (!ok) { routing = false; return deny('Not approved', g ? `${mail} has no access yet. Ask a superadmin to add it.` : 'Your account is not active. Contact a superadmin.'); }
     location.replace(dest);
   } catch (e) { routing = false; deny('Could not verify your account', e.code === 'permission-denied' ? 'Firestore rules are not published yet, or this account has no access.' : 'Check your connection and try again.'); }

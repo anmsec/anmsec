@@ -1,0 +1,18 @@
+/* Admin pages: fixed light look, independent of the public site theme and of style.css */
+:root{--bg:#f3f9f6;--ink:#10281e;--mute:#5f7a6c;--line:#d3e4db;--g:#0f7f55;--gd:#0d2a1f;--gl:#e1f3ea;--gold:#b98a14;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font:400 15px/1.5 'Barlow',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;margin:0;line-height:1.1}
+a{color:var(--g)}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.hint{color:var(--mute);font-size:13px}
+button{font:600 14px 'Barlow',system-ui,sans-serif;background:var(--g);color:#fff;border:0;border-radius:10px;padding:9px 16px;cursor:pointer}
+button:hover{filter:brightness(1.08)}button:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:#fff;color:var(--gd);border:1px solid var(--line)}button.ghost:hover{background:var(--gl)}
+.tab{border-radius:999px}
+.tab.on,button.ghost.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+input,select,textarea{font:inherit;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0}
+input[type=checkbox]{width:auto}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--g);outline-offset:1px}
+dialog{background:#fff;color:var(--ink)}

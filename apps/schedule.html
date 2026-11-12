@@ -4,16 +4,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pub.css">
-<style>
-nav .brand span{text-transform:none}
-nav .links a.on{color:var(--g,var(--mint))}
-@media(max-width:760px){nav .brand span{font-size:.9rem;line-height:1.1}}
-</style></head>
+<style>nav .brand span{text-transform:none}@media(max-width:760px){nav .brand span{font-size:.9rem;line-height:1.1}}</style></head>
 <body data-page="schedule">
-<nav><div class="wrap"><a class="brand" href="index.html"><img src="logo.png" alt="" onerror="this.remove()"><span>72nd ANMSEC Mine and Dink</span></a><div class="links"><a href="schedule.html" class="on">Schedule</a><a href="standings.html">Standings</a><a href="rules.html">Rules</a><a href="index.html#faq">FAQ</a><a href="index.html">Main site</a><a href="index.html#register" class="btn" style="padding:9px 20px;margin-left:26px">Register</a></div></div></nav>
-<main class="wrap"><h1>Schedule</h1><p class="sub">Game times and courts. Scores update live.</p>
-<div id="bar"></div>
-<div id="out"></div></main>
+<nav><div class="wrap"><a class="brand" href="index.html"><img src="logo.png" alt="" onerror="this.remove()"><span>72nd ANMSEC Mine and Dink</span></a><div class="links"><a href="schedule.html" class="pub on">Schedule</a><a href="standings.html" class="pub">Standings</a><a href="rules.html">Rules</a><a href="index.html#faq">FAQ</a><a href="index.html">Main site</a><a href="index.html#register" class="btn" style="padding:9px 20px;margin-left:26px">Register</a></div></div></nav>
+<header class="ph"><div class="wrap"><p class="ev">72<span class="lc">nd</span> ANMSEC Mine and Dink</p><h1>Schedule</h1><p class="intro">Game times and courts. Scores update live.</p></div></header>
+<main class="wrap"><div class="note"><b>Please note:</b> The schedule and court numbers are tentative and subject to change. Check this page for updates. Playoff match-ups are filled in once the elimination round is finished.</div><div id="bar"></div><div id="out"></div></main>
+<footer><div>72nd ANMSEC Mine and Dink<br>Questions: pmsea.pickleball@gmail.com · 09273978617</div></footer>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script><script src="scoring.js"></script><script src="pub.js"></script></body></html>

@@ -24,10 +24,10 @@ const RULES_HTML=`<ol class="steps rl">
 <li><div><b>Team name.</b> Choose a team name that represents your company and relates to pickleball. The best team name and logo wins an award. Send your logo to pmsea.pickleball@gmail.com once it is ready.</div></li>
 <li><div><b>Encounters.</b> Each encounter has Men’s, Women’s and Mixed Doubles. Every category win is 1 team point, and winning at least 2 categories wins the encounter.</div></li>
 <li><div><b>Elimination round.</b> 4 random brackets of 5 teams, single round-robin. The top 2 of each bracket advance.</div></li>
-<li><div><b>Quarterfinals.</b> 8 teams in 2 crossover brackets (E: top 2 of A and B; F: top 2 of C and D), single round-robin with standings reset. The top 2 of each advance.</div></li>
-<li><div><b>Semifinals.</b> Best of three: E1 vs F2 and F1 vs E2. The losers play for third place.</div></li>
+<li><div><b>Quarterfinals.</b> Knockout round for the 8 teams: Top 1 of Bracket A vs Top 2 of C, Top 1 of B vs Top 2 of D, Top 1 of C vs Top 2 of A, and Top 1 of D vs Top 2 of B. Each match follows the encounter format, and winners advance.</div></li>
+<li><div><b>Semifinals.</b> Knockout, best of three: Winner QF1 vs Winner QF2 and Winner QF3 vs Winner QF4. The losers play the Battle for 3rd.</div></li>
 <li><div><b>Finals.</b> Best of five. Games 4 and 5 are Mixed Doubles with new pairings, and no partnership can repeat.</div></li>
-<li><div><b>Game scores.</b> Race to 11, no deuce (the next point at 10–10 wins). Finals are race to 15, win by two.</div></li>
+<li><div><b>Game scores.</b> Race to 11 with sideout scoring and win by 1. At 10–10 there is no sudden death: the serving team must win the rally to score the winning point. Finals are race to 15, win by two.</div></li>
 <li><div><b>Uniforms and awards.</b> Wear a coordinated team uniform to compete for the Best-Looking Team Uniform Award. Winners receive medals and cash prizes.</div></li>
 <li><div><b>Schedules.</b> The elimination round is on November 18, 2026. The quarterfinals, semifinals and championship finals are on November 19, 2026. Matches start at 8:00 AM on both days at Court 463, Baguio City. The bracket draw is announced on tournament day, and tie-break procedures are announced before the first match. Socials Night is on November 18.</div></li>
 </ol>
@@ -37,8 +37,8 @@ const paras=s=>String(s).split(/\n\s*\n/).map(p=>`<p class="pre">${esc(p.trim())
 function build(c,s){
  c.title=TITLE;document.title=TITLE;$('nt').textContent=TITLE;$('h1').innerHTML='72<sup>nd</sup> ANMSEC Mine and Dink Team Tournament Open 2026';$('tg').textContent=c.tagline;$('hd').textContent=c.date;$('hv').textContent=c.venue;
  if(c.posterUrl){const h=$('top');h.classList.add('poster');h.style.backgroundImage=`linear-gradient(180deg,rgba(0,0,0,.15) 40%,var(--bg) 100%),url(${esc(c.posterUrl)})`;}
- const F=k=>feature(c,k),st=mpoState(s),cats=c.categories,hasPrize=cats.some(x=>x.first||x.second||x.third),links=[cats.length>1&&['categories','Categories'],hasPrize&&['prizes','Prizes'],['info','Event info'],['rules','Rules'],['rules.html','Full guidelines'],c.faqText&&['faq','FAQ'],F('statusChecker')&&['status.html','Check status'],F('registration')&&['register','Register']].filter(Boolean);
- $('lk').innerHTML=links.map(l=>`<a href="${/\.html$/.test(l[0])?l[0]:'#'+l[0]}" ${l[0]==='register'?'class="btn" style="padding:9px 20px;margin-left:26px"':''}>${l[1]}</a>`).join('');
+ const F=k=>feature(c,k),st=mpoState(s),cats=c.categories,hasPrize=cats.some(x=>x.first||x.second||x.third),links=[cats.length>1&&['categories','Categories'],hasPrize&&['prizes','Prizes'],['info','Event info'],['rules','Rules'],['rules.html','Full guidelines'],['schedule.html','Schedule'],['standings.html','Standings'],c.faqText&&['faq','FAQ'],F('statusChecker')&&['status.html','Check status'],F('registration')&&['register','Register']].filter(Boolean);
+ $('lk').innerHTML=links.map(l=>`<a href="${/\.html$/.test(l[0])?l[0]:'#'+l[0]}" ${l[0]==='register'?'class="btn" style="padding:9px 20px;margin-left:26px"':/^(schedule|standings)\.html$/.test(l[0])?'class="pub"':''}>${l[1]}</a>`).join('');
  $('st').textContent=F('registration')?mpoStatusText(s,st):'';$('hb').classList.toggle('hide',!F('registration'));
  if(F('countdown')&&st==='soon'){const t=Date.parse(s.open+'T'+c.openTime+':00+08:00'),tick=()=>{const d=Math.max(0,t-Date.now());$('st').textContent='Registration opens in '+Math.floor(d/864e5)+'d '+Math.floor(d%864e5/36e5)+'h '+Math.floor(d%36e5/6e4)+'m '+Math.floor(d%6e4/1e3)+'s';};tick();setInterval(tick,1000);}
  let h=cats.length<2?'':sec('categories','Categories',`${cats.length} categories. Six players per team (3 men, 3 women).`,`<div class="panel"><table class="matrix"><tr><th>Category</th><th>Bracket</th><th>Slots</th></tr>${cats.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.bracket||'')}</td><td>${esc(x.slots||'')}</td></tr>`).join('')}</table></div>`);
